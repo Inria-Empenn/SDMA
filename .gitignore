@@ -1,3 +1,19 @@
+#nifti file
+*.nii
+*.nii.gz
+
+
+# debugging maps
+debugmaps/
+
+# other uninteresting files
+*.odp
+*.pyc
+
+# nipype
+crash*pklz
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
