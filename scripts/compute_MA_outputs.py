@@ -1,11 +1,9 @@
 import numpy
 import MA_estimators
-import data_generator 
 import importlib
+importlib.reload(MA_estimators) # reupdate imported codes, useful for debugging
 
 def get_MA_outputs(contrast_estimates):
-	importlib.reload(MA_estimators) # reupdate imported codes, useful for debugging
-
 	# Store results in:
 	results_simulation = {}
 	
@@ -27,12 +25,12 @@ def get_MA_outputs(contrast_estimates):
 		} 
 	run_estimator("Average", MA_estimators.average)
 	run_estimator("Stouffer", MA_estimators.Stouffer)
-	run_estimator("Dependence-corrected \nStouffer", MA_estimators.dependence_corrected_Stouffer)
+	run_estimator("Dependence-Corrected \nStouffer", MA_estimators.dependence_corrected_Stouffer)
 	run_estimator("GLS Stouffer", MA_estimators.GLS_Stouffer)
 	run_estimator("Consensus Stouffer", MA_estimators.consensus_Stouffer)
-	run_estimator("Consensus weighted \nStouffer", MA_estimators.weighted_Stouffer)
-	run_estimator("consensus GLS \nStouffer", MA_estimators.consensus_GLS_Stouffer)
-	run_estimator("consensus average", MA_estimators.consensus_average)
+	run_estimator("Consensus Weighted \nStouffer", MA_estimators.weighted_Stouffer)
+	run_estimator("Consensus GLS \nStouffer", MA_estimators.consensus_GLS_Stouffer)
+	run_estimator("Consensus Average", MA_estimators.consensus_average)
 
 	return results_simulation
 

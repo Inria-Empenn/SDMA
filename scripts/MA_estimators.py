@@ -151,3 +151,7 @@ def consensus_average(contrast_estimates):
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
     return T_map, p_values
+
+if __name__ == "__main__":
+   print('This file is intented to be used as imported only')
+

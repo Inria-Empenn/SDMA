@@ -17,13 +17,12 @@ if not os.path.exists(results_dir):
     os.mkdir(results_dir)
 
 # plot data (takes 30 sec)
+plot_generated_data.plot_data()
 
-# plot_generated_data.plot_data()
-
+## DEBUGGING
 def print_summary_results(MA_outputs):
     for model in MA_outputs.keys():
         print(model, " T-map (5 first): ", MA_outputs[model]['T_map'][:5])
-
 
 for simulation in ["Null", "Null correlated", "Null correlated medium", "Null correlated low", "Non-null correlated", "Non-null heterogeneous"]:
     if simulation == "Null correlated medium":
@@ -35,9 +34,12 @@ for simulation in ["Null", "Null correlated", "Null correlated medium", "Null co
     MA_outputs = compute_MA_outputs.get_MA_outputs(contrast_estimates)
     K, J = contrast_estimates.shape
     utils.plot_PP(MA_outputs,contrast_estimates,simulation)
-    utils.plot_QQ(MA_outputs,contrast_estimates,simulation)
+    if "Non-null" not in simulation:
+        utils.plot_QQ(MA_outputs,contrast_estimates,simulation)
     utils.compare_contrast_estimates_plot(MA_outputs, simulation)
-    print(simulation)
-    print_summary_results(MA_outputs)
+    ## DEBUGGING
+    # print(simulation)
+    # print_summary_results(MA_outputs)
     print("*** Simulation for {} is DONE".format(simulation))
     print(" "*100)
+

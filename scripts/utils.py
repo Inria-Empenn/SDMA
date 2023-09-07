@@ -40,7 +40,6 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
           p_obs_p_cum = minusLog10me(df_obs['p_values'].values) - minusLog10me(p_cum)
 
           # make pplot
-
           axs[col].set_xlabel("-log10 cumulative p")
           axs[col].title.set_text(title)
           axs[col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
@@ -52,12 +51,15 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
           axs[col].axhline(0, color='black', linewidth=0.5, linestyle='--')
 
           # add theoretical confidence interval
-          ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
-          p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
-          p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
-          axs[col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
-          axs[col].set_xlim(0, x_lim_pplot)
-          axs[col].set_ylim(-1, 1)
+          if "Non-null" not in simulation:
+               ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
+               p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
+               p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
+               axs[col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
+               axs[col].set_xlim(0, x_lim_pplot)
+               axs[col].set_ylim(-1, 1)
+          else:
+               axs[col].set_xlim(0, x_lim_pplot)
           color= 'green' if verdict == True else 'black'
           axs[col].text(2, 0.25, 'ratio={}%'.format(ratio_significance), color=color)
 
@@ -95,6 +97,8 @@ def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
      plt.tight_layout()
      plt.savefig("results_in_generated_data/qq_plot_{}.png".format(simulation))
      plt.close('all')
+
+
 
 
 

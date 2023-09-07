@@ -1,10 +1,12 @@
 #nifti file
 *.nii
 *.nii.gz
+*.npy
 
 
 # debugging maps
 debugmaps/
+
 
 # other uninteresting files
 *.odp
