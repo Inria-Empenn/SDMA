@@ -3,13 +3,12 @@ import MA_estimators
 import data_generator 
 import importlib
 
-def get_MA_outputs(simulation):
-	importlib.reload(data_generator) # reupdate imported codes, useful for debugging
+def get_MA_outputs(contrast_estimates):
 	importlib.reload(MA_estimators) # reupdate imported codes, useful for debugging
 
 	# Store results in:
 	results_simulation = {}
-	contrast_estimates = data_generator.generate_simulation(case=simulation)
+	
 	J = contrast_estimates.shape[1]
 
 	def run_estimator(title, estimator_function):
@@ -35,7 +34,7 @@ def get_MA_outputs(simulation):
 	run_estimator("consensus GLS \nStouffer", MA_estimators.consensus_GLS_Stouffer)
 	run_estimator("consensus average", MA_estimators.consensus_average)
 
-	return results_simulation, contrast_estimates
+	return results_simulation
 
 if __name__ == "__main__":
    print('This file is intented to be used as imported only')
