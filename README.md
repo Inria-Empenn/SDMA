@@ -2,17 +2,18 @@
 
 Lefort-Besnard J, Nichols T, Maumet C
 
----
 Please cite this paper when using the code for your research.
 You can clone this repository by:
 git clone https://github.com/JLefortBesnard/SDMA.git
 
+---
 
 ### Results in generated data
 
 #### Generated data
 
 <img src="results_in_generated_data/data_visualisation.png" align="right" style="width:100%;"/>
+&nbsp;
 
 #### PP plots
 
@@ -23,6 +24,12 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_in_generated_data/pp_plot_Non-null heterogeneous.png" align="right" style="width:100%;"/>
 <img src="results_in_generated_data/pp_plot_Non-null correlated.png" align="right" style="width:100%;"/>
 
+
+&nbsp;
+
+---
+
+&nbsp;
 ### Results in NARPS data
 
 #### frequency
@@ -34,11 +41,12 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_narpsdata/hyp8_MA_outputs.png" align="right" style="width:100%;"/>
 <img src="results_narpsdata/hyp9_MA_outputs.png" align="right" style="width:100%;"/>
 
+&nbsp;
 #### brain maps
-<img src="results_narpsdata/thresholded_map_hyp1_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp2_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp5_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp6_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp7_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp8_nofdr.png" align="right" style="width:100%;"/>
-<img src="results_narpsdata/thresholded_map_hyp9_nofdr.png" align="right" style="width:100%;"/>
+<img src="results_narpsdata/thresholded_map_hyp1_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp2_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp5_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp6_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp7_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp8_nofdr.png" align="right" style="width:50%;"/>
+<img src="results_narpsdata/thresholded_map_hyp9_nofdr.png" align="right" style="width:50%;"/>
