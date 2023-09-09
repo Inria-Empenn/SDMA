@@ -6,6 +6,8 @@
 
 # debugging maps
 debugmaps/
+temp/
+admin/
 
 
 # other uninteresting files

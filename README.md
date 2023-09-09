@@ -8,7 +8,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 
 ---
 
-### Results in generated data
+### MA outputs in generated data
 
 #### Generated data
 
@@ -30,7 +30,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 ---
 
 &nbsp;
-### Results in NARPS data
+### MA outputs in NARPS data
 
 #### frequency
 <img src="results_narpsdata/hyp1_MA_outputs.png" align="right" style="width:100%;"/>
@@ -50,3 +50,34 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_narpsdata/thresholded_map_hyp7_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp8_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp9_nofdr.png" align="right" style="width:50%;"/>
+
+
+
+&nbsp;
+
+---
+
+&nbsp;
+### Testing Q assumptions
+
+#### Frobenius scores
+<img src="results_Q_assumptions/hyp_1.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/hyp_2.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/hyp_5.png" align="right" style="width:100%;"/>
+"width:100%;"/>
+<img src="results_Q_assumptions/hyp_6.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/hyp_7.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/hyp_8.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/hyp_9.png" align="right" style="width:100%;"/>
+&nbsp;
+
+
+#### Similarity
+<img src="results_Q_assumptions/graph_and_heatmap_all_hyp.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp1.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp2.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp5.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp6.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp7.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp8.png" align="right" style="width:100%;"/>
+<img src="results_Q_assumptions/graph_and_heatmap_hyp9.png" align="right" style="width:100%;"/>
