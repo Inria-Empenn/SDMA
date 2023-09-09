@@ -58,21 +58,9 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 
 #### Frobenius scores
 <img src="results_Q_assumptions/hyp_1.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_2.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_5.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_6.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_7.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_8.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/hyp_9.png" align="right" style="width:100%;"/>
 &nbsp;
 
 
 #### Similarity
 <img src="results_Q_assumptions/graph_and_heatmap_all_hyp.png" align="right" style="width:100%;"/>
 <img src="results_Q_assumptions/graph_and_heatmap_hyp1.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp2.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp5.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp6.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp7.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp8.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp9.png" align="right" style="width:100%;"/>
