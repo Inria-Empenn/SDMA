@@ -49,18 +49,3 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_narpsdata/thresholded_map_hyp7_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp8_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp9_nofdr.png" align="right" style="width:50%;"/>
-&nbsp;
-
----
-
-&nbsp;
-### Testing Q assumptions
-
-#### Frobenius scores
-<img src="results_Q_assumptions/hyp_1.png" align="right" style="width:100%;"/>
-&nbsp;
-
-
-#### Similarity
-<img src="results_Q_assumptions/graph_and_heatmap_all_hyp.png" align="right" style="width:100%;"/>
-<img src="results_Q_assumptions/graph_and_heatmap_hyp1.png" align="right" style="width:100%;"/>
