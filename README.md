@@ -23,8 +23,6 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_in_generated_data/pp_plot_Null correlated low.png" align="right" style="width:100%;"/>
 <img src="results_in_generated_data/pp_plot_Non-null heterogeneous.png" align="right" style="width:100%;"/>
 <img src="results_in_generated_data/pp_plot_Non-null correlated.png" align="right" style="width:100%;"/>
-
-
 &nbsp;
 
 ---
@@ -42,6 +40,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_narpsdata/hyp9_MA_outputs.png" align="right" style="width:100%;"/>
 
 &nbsp;
+
 #### brain maps
 <img src="results_narpsdata/thresholded_map_hyp1_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp2_nofdr.png" align="right" style="width:50%;"/>
@@ -50,9 +49,6 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_narpsdata/thresholded_map_hyp7_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp8_nofdr.png" align="right" style="width:50%;"/>
 <img src="results_narpsdata/thresholded_map_hyp9_nofdr.png" align="right" style="width:50%;"/>
-
-
-
 &nbsp;
 
 ---
@@ -64,7 +60,6 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 <img src="results_Q_assumptions/hyp_1.png" align="right" style="width:100%;"/>
 <img src="results_Q_assumptions/hyp_2.png" align="right" style="width:100%;"/>
 <img src="results_Q_assumptions/hyp_5.png" align="right" style="width:100%;"/>
-"width:100%;"/>
 <img src="results_Q_assumptions/hyp_6.png" align="right" style="width:100%;"/>
 <img src="results_Q_assumptions/hyp_7.png" align="right" style="width:100%;"/>
 <img src="results_Q_assumptions/hyp_8.png" align="right" style="width:100%;"/>
