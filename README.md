@@ -18,11 +18,27 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 #### PP plots
 
 <img src="results_in_generated_data/pp_plot_Null.png" align="right" style="width:100%;"/>
-<img src="results_in_generated_data/pp_plot_Null correlated.png" align="right" style="width:100%;"/>
-<img src="results_in_generated_data/pp_plot_Null correlated medium.png" align="right" style="width:100%;"/>
-<img src="results_in_generated_data/pp_plot_Null correlated low.png" align="right" style="width:100%;"/>
-<img src="results_in_generated_data/pp_plot_Non-null heterogeneous.png" align="right" style="width:100%;"/>
-<img src="results_in_generated_data/pp_plot_Non-null correlated.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Null_correlated_80%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Null_correlated_50%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Null_correlated_20%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Non-null_heterogeneous_voxels.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_20%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_30%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_50%.png" align="right" style="width:100%;"/>
+&nbsp;
+
+---
+
+#### PP plots multiverse (10 different seeds)
+
+<img src="results_in_generated_data/pp_plot_multiverse_Null.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Null_correlated_80%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Null_correlated_50%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Null_correlated_20%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_voxels.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_20%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_30%.png" align="right" style="width:100%;"/>
+<img src="results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_50%.png" align="right" style="width:100%;"/>
 &nbsp;
 
 ---

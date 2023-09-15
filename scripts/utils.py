@@ -66,9 +66,8 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
      plt.suptitle('P-P plots')
      plt.tight_layout()
      if "\n" in simulation:
-          simulation = simulation.replace('\n', '_')
-     else:
-          simulation = simulation.replace(' ', '_')
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
 
      plt.savefig("results_in_generated_data/pp_plot_{}.png".format(simulation))
      plt.close('all')
@@ -100,9 +99,8 @@ def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
      plt.suptitle('Q-Q plots')
      plt.tight_layout()
      if "\n" in simulation:
-          simulation = simulation.replace('\n', '_')
-     else:
-          simulation = simulation.replace(' ', '_')
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
      plt.savefig("results_in_generated_data/qq_plot_{}.png".format(simulation))
      plt.close('all')
 
@@ -121,9 +119,66 @@ def compare_contrast_estimates_plot(MA_outputs, simulation):
      plt.legend(loc="lower right")
      plt.tight_layout()
      if "\n" in simulation:
-          simulation = simulation.replace('\n', '_')
-     else:
-          simulation = simulation.replace(' ', '_')
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
      plt.savefig("results_in_generated_data/MA_contrast_estimates_{}.png".format(simulation))
      plt.close('all')
 
+
+def plot_multiverse_PP(results_per_seed, J):
+     p_cum = distribution_inversed(J)
+     x_lim_pplot = -numpy.log10(1/J)
+     generated_data_types = list(results_per_seed[0].keys())
+     MA_estimators = list(results_per_seed[0][generated_data_types[0]].keys())
+     for generation in generated_data_types:
+          f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
+          for col, title in enumerate(MA_estimators):
+               for seed in results_per_seed.keys():
+                    # store required variables
+                    T_map, p_values, ratio_significance, verdict = results_per_seed[seed][generation][title].values()
+                    # reformat p and t to sort and plot
+                    df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
+                    df_obs = df_obs.sort_values(by=['p_values'])
+                    # explected t and p distribution
+                    t_expected = scipy.stats.norm.rvs(size=J, random_state=0)
+                    p_expected = 1-scipy.stats.norm.cdf(t_expected)
+                    df_exp = pandas.DataFrame(data=numpy.array([p_expected, t_expected]).T, columns=["p_expected", "t_expected"])
+                    df_exp = df_exp.sort_values(by=['p_expected'])
+                    # Assign values back
+                    p_expected = df_exp['p_expected'].values
+                    t_expected = df_exp['t_expected'].values
+
+                    p_obs_p_cum = minusLog10me(df_obs['p_values'].values) - minusLog10me(p_cum)
+
+                    # make pplot
+                    axs[col].set_xlabel("-log10 cumulative p")
+                    axs[col].title.set_text(title)
+                    axs[col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
+                    if col == 0:
+                         axs[col].set_ylabel("{}\n\nobs p - cum p".format(generation))
+                    else:
+                         axs[col].set_ylabel("")
+                    axs[col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
+                    axs[col].axhline(0, color='black', linewidth=0.5, linestyle='--')
+
+                    # add theoretical confidence interval
+                    if "Non-null" not in generation:
+                         ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
+                         p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
+                         p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
+                         axs[col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
+                         axs[col].set_xlim(0, x_lim_pplot)
+                         axs[col].set_ylim(-1, 1)
+                    else:
+                         axs[col].set_xlim(0, x_lim_pplot)
+                    color= 'green' if verdict == True else 'black'
+                    # axs[col].text(2, 0.25, 'ratio={}%'.format(ratio_significance), color=color)
+          plt.suptitle('P-P plots')
+          plt.tight_layout()
+          if "\n" in generation:
+               generation = generation.replace('\n', '')
+          generation = generation.replace(' ', '_')
+
+          plt.savefig("results_in_generated_data/pp_plot_mutliverse_{}.png".format(generation))
+          plt.close('all')
+          print("** PLOTTING multiverse in {} ENDED WELL **".format(generation))

@@ -22,12 +22,13 @@ generated_data = {"Null":data_generator.generate_simulation(case="Null"),
                 "Null correlated 20%": data_generator.generate_simulation(case="Null correlated", corr=0.2),
                 "Non-null correlated 80%": data_generator.generate_simulation(case="Non-null correlated", corr=0.8),
                 "Non-null heterogeneous\n voxels": data_generator.generate_simulation(case="Non-null heterogeneous voxels"),
-                "Non-null heterogeneous\n pipelines (30% -)": data_generator.generate_simulation(case="Non-null heterogeneous pipelines"),
-                "Non-null heterogeneous\n pipelines (50% -)": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.5)
+                "Non-null heterogeneous\n pipelines 20%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.20),
+                "Non-null heterogeneous\n pipelines 30%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines"),
+                "Non-null heterogeneous\n pipelines 50%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.5)
                 }
 
 # plot data (takes 30 sec)
-# plot_generated_data.plot_data(generated_data)
+plot_generated_data.plot_data(generated_data)
 
 ## DEBUGGING
 def print_summary_results(MA_outputs):

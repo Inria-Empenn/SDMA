@@ -1,7 +1,7 @@
 import numpy
 
-def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrelated_result_ratio=0.3):
-    numpy.random.seed(0) # reproducibility
+def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrelated_result_ratio=0.3, seed=0):
+    numpy.random.seed(seed) # reproducibility
     # simulation 0
     sigma=1
     # simulation 0 and 1
