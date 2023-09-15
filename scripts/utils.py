@@ -151,34 +151,33 @@ def plot_multiverse_PP(results_per_seed, J):
                     p_obs_p_cum = minusLog10me(df_obs['p_values'].values) - minusLog10me(p_cum)
 
                     # make pplot
-                    axs[col].set_xlabel("-log10 cumulative p")
-                    axs[col].title.set_text(title)
                     axs[col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
-                    if col == 0:
-                         axs[col].set_ylabel("{}\n\nobs p - cum p".format(generation))
-                    else:
-                         axs[col].set_ylabel("")
-                    axs[col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
-                    axs[col].axhline(0, color='black', linewidth=0.5, linestyle='--')
+               axs[col].set_xlabel("-log10 cumulative p")
+               axs[col].title.set_text(title)
+               if col == 0:
+                    axs[col].set_ylabel("{}\n\nobs p - cum p".format(generation))
+               else:
+                    axs[col].set_ylabel("")
+               axs[col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
+               axs[col].axhline(0, color='black', linewidth=0.5, linestyle='--')
 
-                    # add theoretical confidence interval
-                    if "Non-null" not in generation:
-                         ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
-                         p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
-                         p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
-                         axs[col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
-                         axs[col].set_xlim(0, x_lim_pplot)
-                         axs[col].set_ylim(-1, 1)
-                    else:
-                         axs[col].set_xlim(0, x_lim_pplot)
-                    color= 'green' if verdict == True else 'black'
-                    # axs[col].text(2, 0.25, 'ratio={}%'.format(ratio_significance), color=color)
+               # add theoretical confidence interval
+               if "Non-null" not in generation:
+                    ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
+                    p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
+                    p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
+                    axs[col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
+                    axs[col].set_xlim(0, x_lim_pplot)
+                    axs[col].set_ylim(-1, 1)
+               else:
+                    axs[col].set_xlim(0, x_lim_pplot)
+
           plt.suptitle('P-P plots')
           plt.tight_layout()
           if "\n" in generation:
                generation = generation.replace('\n', '')
           generation = generation.replace(' ', '_')
 
-          plt.savefig("results_in_generated_data/pp_plot_mutliverse_{}.png".format(generation))
+          plt.savefig("results_in_generated_data/pp_plot_multiverse_{}.png".format(generation))
           plt.close('all')
           print("** PLOTTING multiverse in {} ENDED WELL **".format(generation))
