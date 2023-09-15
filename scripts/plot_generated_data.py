@@ -8,14 +8,7 @@ import importlib
 importlib.reload(data_generator) # reupdate imported codes, useful for debugging
 
 
-def plot_data():
-    generated_data = {"Null":data_generator.generate_simulation(case="Null"), 
-                "Null correlated": data_generator.generate_simulation(case="Null correlated", corr=0.8),
-                "Null correlated medium": data_generator.generate_simulation(case="Null correlated", corr=0.5),
-                "Null correlated low": data_generator.generate_simulation(case="Null correlated", corr=0.2),
-                "Non-null correlated": data_generator.generate_simulation(case="Non-null correlated", corr=0.8),
-                "Non-null heterogeneous": data_generator.generate_simulation(case="Non-null heterogeneous", corr=0.8)
-                }
+def plot_data(generated_data):
 
     # #######################################
     # print("Plotting generated data")

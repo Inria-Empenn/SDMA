@@ -44,7 +44,7 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
           axs[col].title.set_text(title)
           axs[col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
           if col == 0:
-               axs[col].set_ylabel("-{}-\n\nobs p - cum p".format(simulation))
+               axs[col].set_ylabel("{}\n\nobs p - cum p".format(simulation))
           else:
                axs[col].set_ylabel("")
           axs[col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
@@ -65,6 +65,11 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
 
      plt.suptitle('P-P plots')
      plt.tight_layout()
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '_')
+     else:
+          simulation = simulation.replace(' ', '_')
+
      plt.savefig("results_in_generated_data/pp_plot_{}.png".format(simulation))
      plt.close('all')
      print("** ENDED WELL **")
@@ -89,12 +94,15 @@ def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
           else:
              sm.qqplot(T_map,  scipy.stats.norm, fit=True, line='r',ax=axs[col], markersize='2')
           if col == 0:
-             axs[col].set_ylabel("-{}-\n\nSample Quantiles".format(title))
+             axs[col].set_ylabel("{}\n\nSample Quantiles".format(title))
           else:
              axs[col].set_ylabel("")
-
      plt.suptitle('Q-Q plots')
      plt.tight_layout()
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '_')
+     else:
+          simulation = simulation.replace(' ', '_')
      plt.savefig("results_in_generated_data/qq_plot_{}.png".format(simulation))
      plt.close('all')
 
@@ -112,6 +120,10 @@ def compare_contrast_estimates_plot(MA_outputs, simulation):
           plt.plot(range(0, len(T_map)), T_map, color=colors[ind], label=title)
      plt.legend(loc="lower right")
      plt.tight_layout()
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '_')
+     else:
+          simulation = simulation.replace(' ', '_')
      plt.savefig("results_in_generated_data/MA_contrast_estimates_{}.png".format(simulation))
      plt.close('all')
 

@@ -16,21 +16,26 @@ results_dir = "results_in_generated_data"
 if not os.path.exists(results_dir):
     os.mkdir(results_dir)
 
+generated_data = {"Null":data_generator.generate_simulation(case="Null"), 
+                "Null correlated 80%": data_generator.generate_simulation(case="Null correlated", corr=0.8),
+                "Null correlated 50%": data_generator.generate_simulation(case="Null correlated", corr=0.5),
+                "Null correlated 20%": data_generator.generate_simulation(case="Null correlated", corr=0.2),
+                "Non-null correlated 80%": data_generator.generate_simulation(case="Non-null correlated", corr=0.8),
+                "Non-null heterogeneous\n voxels": data_generator.generate_simulation(case="Non-null heterogeneous voxels"),
+                "Non-null heterogeneous\n pipelines (30% -)": data_generator.generate_simulation(case="Non-null heterogeneous pipelines"),
+                "Non-null heterogeneous\n pipelines (50% -)": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.5)
+                }
+
 # plot data (takes 30 sec)
-plot_generated_data.plot_data()
+# plot_generated_data.plot_data(generated_data)
 
 ## DEBUGGING
 def print_summary_results(MA_outputs):
     for model in MA_outputs.keys():
         print(model, " T-map (5 first): ", MA_outputs[model]['T_map'][:5])
 
-for simulation in ["Null", "Null correlated", "Null correlated medium", "Null correlated low", "Non-null correlated", "Non-null heterogeneous"]:
-    if simulation == "Null correlated medium":
-        contrast_estimates = data_generator.generate_simulation(case="Null correlated", corr=0.5)
-    elif simulation == "Null correlated low":
-        contrast_estimates = data_generator.generate_simulation(case="Null correlated", corr=0.2)
-    else:
-        contrast_estimates = data_generator.generate_simulation(case=simulation)
+for simulation in generated_data.keys():
+    contrast_estimates = generated_data[simulation]
     MA_outputs = compute_MA_outputs.get_MA_outputs(contrast_estimates)
     K, J = contrast_estimates.shape
     utils.plot_PP(MA_outputs,contrast_estimates,simulation)
