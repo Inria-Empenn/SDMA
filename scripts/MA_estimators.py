@@ -1,6 +1,6 @@
 import numpy
 import scipy
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import importlib
 import utils
 
@@ -22,7 +22,8 @@ def average(contrast_estimates):
     # compute p-values for inference
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    weights = numpy.zeros(K)
+    return T_map, p_values, weights
 
 def Stouffer(contrast_estimates):
     # compute meta-analytic statistics
@@ -33,7 +34,8 @@ def Stouffer(contrast_estimates):
     # compute p-values for inference
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    weights = numpy.zeros(K)
+    return T_map, p_values, weights
 
 
 #########
@@ -52,7 +54,8 @@ def dependence_corrected_Stouffer(contrast_estimates):
     # compute p-values for inference
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    weights = numpy.zeros(K)
+    return T_map, p_values, weights
 
 def GLS_Stouffer(contrast_estimates):
     K = contrast_estimates.shape[0]
@@ -65,7 +68,12 @@ def GLS_Stouffer(contrast_estimates):
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+
+    weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
+    weights = weights.reshape(-1, 1)
+    scaler = MinMaxScaler()
+    weights = scaler.fit_transform(weights)
+    return T_map, p_values, weights
 
 #########
 ##### SDMA consensus MA models #####
@@ -85,7 +93,8 @@ def consensus_Stouffer(contrast_estimates):
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    weights = numpy.zeros(K)
+    return T_map, p_values, weights
 
 
 def weighted_Stouffer(contrast_estimates):
@@ -97,7 +106,7 @@ def weighted_Stouffer(contrast_estimates):
     # z* = (z - z_mean) / s 
     # with s = image-wise var for pipeline k
     # with z_mean = image-wise mean for pipeline k
-    # numpy.divide(numpy.subtract(contrast_estimates.T, contrast_estimates.T.mean(axis=0)), contrast_estimates.T.std(axis=0))
+    # numpy.divide(numpy.subtract(contrast_estimates.T, contrast_estimates.mean(axis=1)), contrast_estimates.std(axis=1))
     # These standardized maps are averaged over pipelines to create a map Z∗
     Z_star_mean_j = numpy.mean(contrast_estimates_std_Kwise, 0) # shape J
     # image-wise mean of this average of standard maps is zero
@@ -116,7 +125,12 @@ def weighted_Stouffer(contrast_estimates):
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    
+    weights = contrast_estimates.mean(axis=1)*-1 # higher == less weight
+    weights = weights.reshape(-1, 1)
+    scaler = MinMaxScaler()
+    weights = scaler.fit_transform(weights)
+    return T_map, p_values, weights
 
 def consensus_GLS_Stouffer(contrast_estimates):
     # compute GLS Stouffer first
@@ -134,7 +148,12 @@ def consensus_GLS_Stouffer(contrast_estimates):
     # compute p-values for inference
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    
+    weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
+    weights = weights.reshape(-1, 1)
+    scaler = MinMaxScaler()
+    weights = scaler.fit_transform(weights)
+    return T_map, p_values, weights
 
 
 def consensus_average(contrast_estimates):
@@ -150,7 +169,8 @@ def consensus_average(contrast_estimates):
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    return T_map, p_values
+    weights = numpy.zeros(K)
+    return T_map, p_values, weights
 
 if __name__ == "__main__":
    print('This file is intented to be used as imported only')

@@ -55,5 +55,22 @@ def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrel
         return matrix_data.T # back to shape K, J
 
 
+    # Simulation 5: Non-null but heterogeneous data per team: Correlation Q + 
+    # all pipelines share same mean, but a percentage (anticorrelated_result_ratio) of the team have mu = -mu1
+    # and 3 teams have independant results
+    elif case=="Non-null heterogeneous pipelines (+3 indep)":
+        print("Generating simulation: ", case, ", corr=", corr, ", reverse ratio=", anticorrelated_result_ratio, ", independent teams: 3")
+        cov_mat = numpy.ones((K, K)) * corr
+        numpy.fill_diagonal(cov_mat, 1)
+        offset = numpy.ones(K) * mean 
+        matrix_data = numpy.random.multivariate_normal(offset, cov_mat, size=J).T # normal thus var = 1, transposed to get shape K,J
+        random_sign = numpy.random.choice([1, -1], size=K, replace=True, p=(1-anticorrelated_result_ratio, anticorrelated_result_ratio))
+        matrix_data = matrix_data.T*random_sign # team wise heterogeneity
+        matrix_data = matrix_data.T # back to shape K, J
+        matrix_data[-3:, :] = matrix_data[-3:, :] * numpy.random.choice([1, -1], size=(3,J), replace=True) # 3 teams with independent results
+        return matrix_data
+
+
+
 if __name__ == "__main__":
    print('This file is intented to be used as imported only')

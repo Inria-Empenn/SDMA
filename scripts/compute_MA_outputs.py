@@ -12,7 +12,7 @@ def get_MA_outputs(contrast_estimates):
 	def run_estimator(title, estimator_function):
 		nonlocal results_simulation
 		print(f"Running -{title}- estimator")
-		T_map, p_values = estimator_function(contrast_estimates)
+		T_map, p_values, weights = estimator_function(contrast_estimates)
 		ratio_significance_raw = (p_values <= 0.05).sum() / len(p_values)
 		ratio_significance = numpy.round(ratio_significance_raw * 100, 4)
 		lim = 2 * numpy.sqrt(0.05 * (1 - 0.05) / J)
@@ -21,7 +21,8 @@ def get_MA_outputs(contrast_estimates):
 		   'T_map': T_map,
 		   'p_values': p_values,
 		   'ratio_significance': ratio_significance,
-		   'verdict': verdict
+		   'verdict': verdict,
+		   'weights': weights
 		} 
 	run_estimator("Average", MA_estimators.average)
 	run_estimator("Stouffer", MA_estimators.Stouffer)

@@ -3,6 +3,7 @@ import scipy
 import pandas
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+import seaborn
 
 def distribution_inversed(J):
     distribution_inversed = []
@@ -23,7 +24,11 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
      f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
      for col, title in enumerate(MA_estimators):
           # store required variables
-          T_map, p_values, ratio_significance, verdict = MA_outputs[title].values()
+          #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
+          T_map = MA_outputs[title]["T_map"]
+          p_values = MA_outputs[title]["p_values"]
+          ratio_significance = MA_outputs[title]["ratio_significance"]
+          verdict = MA_outputs[title]["verdict"]
 
           # reformat p and t to sort and plot
           df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
@@ -84,7 +89,11 @@ def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
      f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
      for col, title in enumerate(MA_estimators):
           # store required variables
-          T_map, p_values, ratio_significance, verdict = MA_outputs[title].values()
+          #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
+          T_map = MA_outputs[title]["T_map"]
+          p_values = MA_outputs[title]["p_values"]
+          ratio_significance = MA_outputs[title]["ratio_significance"]
+          verdict = MA_outputs[title]["verdict"]
 
           # make qqlot
           axs[col].title.set_text(title)
@@ -113,7 +122,11 @@ def compare_contrast_estimates_plot(MA_outputs, simulation):
      colors = ['blue', 'orange', 'green', 'red', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']
      for ind, title in enumerate(MA_estimators):
           # store required variables
-          T_map, p_values, ratio_significance, verdict = MA_outputs[title].values()
+          #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
+          T_map = MA_outputs[title]["T_map"]
+          p_values = MA_outputs[title]["p_values"]
+          ratio_significance = MA_outputs[title]["ratio_significance"]
+          verdict = MA_outputs[title]["verdict"]
           T_map.sort()
           plt.plot(range(0, len(T_map)), T_map, color=colors[ind], label=title)
      plt.legend(loc="lower right")
@@ -135,7 +148,11 @@ def plot_multiverse_PP(results_per_seed, J):
           for col, title in enumerate(MA_estimators):
                for seed in results_per_seed.keys():
                     # store required variables
-                    T_map, p_values, ratio_significance, verdict = results_per_seed[seed][generation][title].values()
+                    # T_map, p_values, ratio_significance, verdict, _ = results_per_seed[seed][generation][title].values() # dangerous because dictionnary are not ordered
+                    T_map = results_per_seed[seed][generation][title]["T_map"]
+                    p_values = results_per_seed[seed][generation][title]["p_values"]
+                    ratio_significance = results_per_seed[seed][generation][title]["ratio_significance"]
+                    verdict = results_per_seed[seed][generation][title]["verdict"]
                     # reformat p and t to sort and plot
                     df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
                     df_obs = df_obs.sort_values(by=['p_values'])
@@ -181,3 +198,23 @@ def plot_multiverse_PP(results_per_seed, J):
           plt.savefig("results_in_generated_data/pp_plot_multiverse_{}.png".format(generation))
           plt.close('all')
           print("** PLOTTING multiverse in {} ENDED WELL **".format(generation))
+
+def plot_weights(simulation, weights):
+     print("Plotting weights for each MA model and pipeline")
+     plt.close('all')
+     f, ax = plt.subplots(1, 2, figsize=(len(weights.columns), 10), sharey=True) 
+     seaborn.heatmap(weights[weights.columns[:-1]], center=0, vmin=0, vmax=1, cmap='coolwarm', square=True, ax=ax[0],cbar_kws={'shrink': 0.5})
+     ax[0].title.set_text("Weights for each MA model and pipeline for simulation \n{}".format(simulation))
+     ax[0].set_xlabel("MA models", fontsize = 12)
+     ax[0].set_ylabel("Pipelines", fontsize = 12)
+     seaborn.heatmap(weights[weights.columns[-1:]], center=0, cmap='coolwarm', square=True, ax=ax[1],cbar_kws={'shrink': 0.5})
+     ax[1].title.set_text("Pipeline type")
+     ax[1].set_xlabel("Mean Voxel", fontsize = 12)
+     plt.tight_layout()
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
+     plt.savefig("results_in_generated_data/weights_in_{}.png".format(simulation))
+     plt.close('all')
+     print("Done plotting")
+

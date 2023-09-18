@@ -18,13 +18,14 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 #### PP plots
 
 ![image link](results_in_generated_data/pp_plot_Null.png)
-![image link](results_in_generated_data/pp_plot_Null_correlated_80%.png)
-![image link](results_in_generated_data/pp_plot_Null_correlated_50%.png)
-![image link](results_in_generated_data/pp_plot_Null_correlated_20%.png)
+![image link](results_in_generated_data/pp_plot_Null_correlated_80%25.png)
+![image link](results_in_generated_data/pp_plot_Null_correlated_50%25.png)
+![image link](results_in_generated_data/pp_plot_Null_correlated_20%25.png)
 ![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_voxels.png)
-![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_20%.png)
-![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_30%.png)
-![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_50%.png)
+![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_20%25.png)
+![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_30%25.png)
+![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_50%25.png)
+![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_(+3indep).png)
 &nbsp;
 
 ---
@@ -32,13 +33,30 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 #### PP plots multiverse (10 different seeds)
 
 ![image link](results_in_generated_data/pp_plot_multiverse_Null.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_80%.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_50%.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_20%.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_80%25.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_50%25.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Null_correlated_20%25.png)
 ![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_voxels.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_20%.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_30%.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_50%.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_20%25.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_30%25.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_50%25.png)
+![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_(+3indep).png)
+&nbsp;
+
+---
+
+
+#### Weights per pipeline per MA models
+
+![image link](results_in_generated_data/weights_in_Null.png)
+![image link](results_in_generated_data/weights_in_Null_correlated_80%25.png)
+![image link](results_in_generated_data/weights_in_Null_correlated_50%25.png)
+![image link](results_in_generated_data/weights_in_Null_correlated_20%25.png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_voxels.png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_20%25.png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_30%25.png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_50%25.png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_(+3_indep).png)
 &nbsp;
 
 ---
