@@ -56,7 +56,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_20%25.png)
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_30%25.png)
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_50%25.png)
-![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_(+3_indep).png)
+![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_(%2B3_indep).png)
 &nbsp;
 
 ---
