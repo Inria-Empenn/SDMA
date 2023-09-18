@@ -203,6 +203,7 @@ def plot_weights(simulation, weights):
      print("Plotting weights for each MA model and pipeline")
      plt.close('all')
      f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 5), gridspec_kw={'wspace': 0})
+     plt.suptitle(simulation)
      for i, (s, a) in enumerate(zip(weights.columns, axs)):
           if i<weights.columns.size-3:
                seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
@@ -215,6 +216,7 @@ def plot_weights(simulation, weights):
           if i>0:
                a.yaxis.set_ticks([])
           a.tick_params(axis='x', rotation=30)
+     
      plt.tight_layout()
      if "\n" in simulation:
           simulation = simulation.replace('\n', '')
