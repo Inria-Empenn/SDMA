@@ -52,6 +52,7 @@ for simulation in generated_data.keys():
         for MA_model in MA_outputs.keys():
             df_weights[MA_model] = MA_outputs[MA_model]['weights']
     df_weights["Mean score"] = contrast_estimates.mean(axis=1)
+    df_weights["Var"] = contrast_estimates.std(axis=1)
     utils.plot_weights(simulation, df_weights)
     ## DEBUGGING
     # print(simulation)
