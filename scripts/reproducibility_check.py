@@ -26,7 +26,8 @@ for random_seed in range(10):
                 "Non-null heterogeneous\n voxels": data_generator.generate_simulation(case="Non-null heterogeneous voxels", seed=random_seed),
                 "Non-null heterogeneous\n pipelines 20%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.20, seed=random_seed),
                 "Non-null heterogeneous\n pipelines 30%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", seed=random_seed),
-                "Non-null heterogeneous\n pipelines 50%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.5, seed=random_seed)
+                "Non-null heterogeneous\n pipelines 50%": data_generator.generate_simulation(case="Non-null heterogeneous pipelines", anticorrelated_result_ratio=0.5, seed=random_seed),
+                "Non-null heterogeneous\n pipelines (+3 indep)": data_generator.generate_simulation(case="Non-null heterogeneous pipelines (+3 indep)", anticorrelated_result_ratio=0.5, seed=random_seed)
                 }
     results_per_model = {}
     for simulation in generated_data.keys():
