@@ -25,7 +25,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 ![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_20%25.png)
 ![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_30%25.png)
 ![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_50%25.png)
-![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_(+3indep).png)
+![image link](results_in_generated_data/pp_plot_Non-null_heterogeneous_pipelines_(%2B3indep).png)
 &nbsp;
 
 ---
@@ -40,7 +40,7 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 ![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_20%25.png)
 ![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_30%25.png)
 ![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_50%25.png)
-![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_(+3indep).png)
+![image link](results_in_generated_data/pp_plot_multiverse_Non-null_heterogeneous_pipelines_(%2B3indep).png)
 &nbsp;
 
 ---
