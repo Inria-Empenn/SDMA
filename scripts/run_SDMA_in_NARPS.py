@@ -8,9 +8,11 @@ import extract_narps_data
 import compute_MA_outputs
 import narps_visualisation
 import importlib
+import pandas
+import utils
 
 importlib.reload(narps_visualisation)
-
+importlib.reload(utils)
 '''
 hypotheses = {1: '+gain: equal indiff',
               2: '+gain: equal range',
@@ -23,7 +25,7 @@ hypotheses = {1: '+gain: equal indiff',
               9: '+loss:ER>EI'}
 '''
 
-results_dir = "results_in_Narps"
+results_dir = "results_in_Narps_data"
 if not os.path.exists(results_dir):
     os.mkdir(results_dir)
 
@@ -33,9 +35,7 @@ participant_mask = nibabel.load("masking/mask_90.nii")
 # save mask for inverse transform
 masker = NiftiMasker(
     mask_img=participant_mask)
-results_dir = "results_narpsdata"
-if not os.path.exists(results_dir):
-    os.mkdir(results_dir)
+
 
 #### NOT INCLUDED IN ANALYSIS 
 # "4961_K9P0" only hyp 9 is weird
@@ -54,9 +54,10 @@ MA_estimators_names = ["Average",
 
 hyps = [1, 2, 5, 6, 7, 8, 9]#numpy.arange(1, 10, 1)
 for hyp in hyps:
+    print('*****Running hyp ', hyp, '*****')
     # check if resampled_maps already exists:
     try:
-        resampled_maps = numpy.load('{}/Hyp{}_resampled_maps.npy'.format(results_dir, hyp))
+        resampled_maps = numpy.load('{}/Hyp{}_resampled_maps.npy'.format(results_dir, hyp), allow_pickle=True)
         print("resampled_maps successfully loaded")
     except:
         print("Data don't already exist thus starting resampling.")
@@ -85,4 +86,65 @@ for hyp in hyps:
     narps_visualisation.plot_brains(MA_outputs, hyp, MA_estimators_names, results_dir, masker)
     print("Building figure 3...")
     narps_visualisation.plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker)
+    print('Saving weights..')
+    df_weights = pandas.DataFrame(columns=MA_outputs.keys())
+    K, J = resampled_maps.shape
+    for row in range(K):
+        for MA_model in MA_outputs.keys():
+            df_weights[MA_model] = MA_outputs[MA_model]['weights']
+    df_weights["Mean score"] = resampled_maps.mean(axis=1)
+    df_weights["Var"] = resampled_maps.std(axis=1)
+    utils.plot_weights_in_Narps(hyp, df_weights)
     resampled_maps = None # empyting RAM memory
+
+
+# print resampled maps
+from nilearn import plotting
+import matplotlib.pyplot as plt
+
+hyps = [1, 2, 5, 6, 7, 8, 9]#numpy.arange(1, 10, 1)
+for hyp in hyps:
+    print("******Plotting map for hyp ", hyp, "******")
+    resampled_maps = numpy.load('{}/Hyp{}_resampled_maps.npy'.format(results_dir, hyp), allow_pickle=True)
+    K = resampled_maps.shape[0]
+
+    # 60 / 20 = 3 figures with 20 plots each
+    for i_fig in range(4):
+        plt.close('all')
+        f, axs = plt.subplots(int(11), 2, figsize=(30, 35))
+        if i_fig == 0:
+            for pipeline_nb in range(11):
+                print("Plotting map ", pipeline_nb)
+                plotting.plot_stat_map(resampled_maps[pipeline_nb], cut_coords=(-21, 0, 9), figure=f, axes=axs[pipeline_nb, 0], title=pipeline_nb)
+                plotting.plot_stat_map(resampled_maps[K - pipeline_nb - 1], cut_coords=(-21, 0, 9), figure=f, axes=axs[pipeline_nb, 1], title=K - pipeline_nb - 1)
+            print('saving...')
+            plt.suptitle("hyp {} part {}".format(hyp, i_fig),fontsize=20)
+            plt.savefig("{}/Hyp{}_resampled_maps_part_{}".format(results_dir, hyp, i_fig))
+            plt.close('all')
+        elif i_fig == 1:
+            for pipeline_nb in range(11, 22):
+                row = pipeline_nb - 11
+                print("Plotting map ", pipeline_nb)
+                plotting.plot_stat_map(resampled_maps[pipeline_nb], cut_coords=(-21, 0, 9), figure=f, axes=axs[row, 0], title=pipeline_nb)
+                plotting.plot_stat_map(resampled_maps[K - pipeline_nb - 1], cut_coords=(-21, 0, 9), figure=f, axes=axs[row, 1], title=K - pipeline_nb - 1)
+            print('saving...')
+            plt.suptitle("hyp {} part {}".format(hyp, i_fig),fontsize=20)
+            plt.savefig("{}/Hyp{}_resampled_maps_part_{}".format(results_dir, hyp, i_fig))
+            plt.close('all')
+        elif i_fig == 2:
+            for pipeline_nb in range(22, 31):
+                row = pipeline_nb - 22
+                print("Plotting map ", pipeline_nb)
+                try:
+                    plotting.plot_stat_map(resampled_maps[pipeline_nb], cut_coords=(-21, 0, 9), figure=f, axes=axs[row, 0], title=pipeline_nb)
+                    plotting.plot_stat_map(resampled_maps[K - pipeline_nb - 1], cut_coords=(-21, 0, 9), figure=f, axes=axs[row, 1], title=K - pipeline_nb - 1)
+                except:
+                    pass
+            print('saving...')
+            plt.suptitle("hyp {} part {}".format(hyp, i_fig),fontsize=20)
+            plt.savefig("{}/Hyp{}_resampled_maps_part_{}".format(results_dir, hyp, i_fig))
+            plt.close('all')
+    print('saving...')
+    plt.suptitle("hyp {} part {}".format(hyp, i_fig),fontsize=20)
+    plt.savefig("{}/Hyp{}_resampled_maps_part_{}".format(results_dir, hyp, i_fig))
+    plt.close('all')

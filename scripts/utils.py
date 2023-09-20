@@ -225,19 +225,26 @@ def plot_weights(simulation, weights):
      plt.close('all')
      print("Done plotting")
 
-     # f, ax = plt.subplots(1, 3, figsize=(len(weights.columns), 15), sharey=True) 
-     # seaborn.heatmap(weights[weights.columns[:-2]], center=0, vmin=0, vmax=1, cmap='coolwarm', square=True, ax=ax[0],cbar_kws={'shrink': 0.25})
-     # ax[0].title.set_text("Weights")
-     # ax[0].set_ylabel("Pipelines", fontsize = 12)
-     # seaborn.heatmap(weights[weights.columns[-2:-1]], center=0, cmap='coolwarm', square=True, ax=ax[1],cbar_kws={'shrink': 0.25})
-     # seaborn.heatmap(weights[weights.columns[-1:]], center=0, cmap='coolwarm', square=True, ax=ax[2],cbar_kws={'shrink': 0.25})
-     # plt.title("Weights for each MA model and pipeline for simulation \n{}".format(simulation))
-     # plt.tight_layout()
-     # if "\n" in simulation:
-     #      simulation = simulation.replace('\n', '')
-     # simulation = simulation.replace(' ', '_')
-     # plt.savefig("results_in_generated_data/weights_in_{}.png".format(simulation))
-     # plt.close('all')
-     # print("Done plotting")
-
+def plot_weights_in_Narps(hyp, weights):
+     print("Plotting weights for each MA model and pipeline")
+     plt.close('all')
+     f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 15), gridspec_kw={'wspace': 0})
+     plt.suptitle("Weights for hypothesis ".format(hyp))
+     for i, (s, a) in enumerate(zip(weights.columns, axs)):
+          if i<weights.columns.size-3:
+               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
+          elif i<weights.columns.size-2:
+               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})    
+          elif i<weights.columns.size-1:
+               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='coolwarm', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+          else:
+               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+          if i>0:
+               a.yaxis.set_ticks([])
+          a.tick_params(axis='x', rotation=30)
+     
+     plt.tight_layout()
+     plt.savefig("results_in_Narps_data/weights_in_hyp_{}.png".format(hyp))
+     plt.close('all')
+     print("Done plotting")
 
