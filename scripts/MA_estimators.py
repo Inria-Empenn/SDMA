@@ -152,10 +152,10 @@ def consensus_GLS_Stouffer(contrast_estimates):
     p_values = p_values.reshape(-1)
     
     weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
-    weights = weights.reshape(-1, 1)
-    scaler = MinMaxScaler() # rescale between 0 and 1
-    weights = scaler.fit_transform(weights)
-    print("Per feature relative scaling of the data : ", scaler.scale_)
+    # weights = weights.reshape(-1, 1)
+    # scaler = MinMaxScaler() # rescale between 0 and 1
+    # weights = scaler.fit_transform(weights)
+    # print("Per feature relative scaling of the data : ", scaler.scale_)
     return T_map, p_values, weights
 
 
