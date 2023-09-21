@@ -47,14 +47,23 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 
 
 #### Weights per pipeline per MA models
+scale GLS = 7, CWS = 56
 ![image link](results_in_generated_data/weights_in_Null.png)
+scale GLS = 48, CWS = 70
 ![image link](results_in_generated_data/weights_in_Null_correlated_80%25.png)
+scale GLS = 31, CWS = 40
 ![image link](results_in_generated_data/weights_in_Null_correlated_50%25.png)
+scale GLS = 25, CWS = 33
 ![image link](results_in_generated_data/weights_in_Null_correlated_20%25.png)
+scale GLS = 48, CWS = 70
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_voxels.png)
+scale GLS = 57, CWS = 110
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_20%25.png)
+scale GLS = 0.13, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_30%25.png)
+scale GLS = 0.15, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_50%25.png)
+scale GLS = 0.20, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_(%2B3_indep).png)
 &nbsp;
 
