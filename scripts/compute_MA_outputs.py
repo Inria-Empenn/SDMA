@@ -26,11 +26,11 @@ def get_MA_outputs(contrast_estimates):
 		} 
 	run_estimator("Average", MA_estimators.average)
 	run_estimator("Stouffer", MA_estimators.Stouffer)
-	run_estimator("Dependence-Corrected \nStouffer", MA_estimators.dependence_corrected_Stouffer)
-	run_estimator("GLS Stouffer", MA_estimators.GLS_Stouffer)
-	run_estimator("Consensus Stouffer", MA_estimators.consensus_Stouffer)
-	run_estimator("Consensus Weighted \nStouffer", MA_estimators.weighted_Stouffer)
-	run_estimator("Consensus GLS \nStouffer", MA_estimators.consensus_GLS_Stouffer)
+	run_estimator("SDMA Stouffer", MA_estimators.dependence_corrected_Stouffer)
+	run_estimator("Consensus \nSDMA Stouffer", MA_estimators.consensus_Stouffer)
+	run_estimator("Consensus \nSDMA Stouffer \n using std inputs", MA_estimators.weighted_Stouffer)
+	run_estimator("GLS \nSDMA Stouffer", MA_estimators.GLS_Stouffer)
+	run_estimator("Consensus \nGLS \nSDMA Stouffer", MA_estimators.consensus_GLS_Stouffer)
 	run_estimator("Consensus Average", MA_estimators.consensus_average)
 
 	return results_simulation

@@ -43,14 +43,17 @@ weird_maps = ["4951_X1Z4", "5680_L1A8", "5001_I07H",
     "4947_X19V", "4961_K9P0", "4974_1K0E", "4990_XU70",
         "5001_I07H", "5680_L1A8"]
 
+
 MA_estimators_names = ["Average",
     "Stouffer",
-    "Dependence-Corrected \nStouffer",
-    "GLS Stouffer",
-    "Consensus Stouffer",
-    "Consensus Weighted \nStouffer",
-    "Consensus GLS \nStouffer",
+    "SDMA Stouffer",
+    "Consensus \nSDMA Stouffer",
+    "Consensus \nSDMA Stouffer \n using std inputs",
+    "GLS \nSDMA Stouffer",
+    "Consensus \nGLS \nSDMA Stouffer",
     "Consensus Average"]
+
+similarity_mask_per_hyp = []
 
 hyps = [1, 2, 5, 6, 7, 8, 9]#numpy.arange(1, 10, 1)
 for hyp in hyps:
@@ -67,9 +70,7 @@ for hyp in hyps:
     print("Starting Masking...")
     resampled_maps = masker.fit_transform(resampled_maps)
     print("Masking DONE")
-    print("*****")
     print("Z values extracted, shape=", resampled_maps.shape) # 61, 1537403 for hyp 1
-    print("*****")
     time.sleep(2)
     # compute several MA estimators for the obtained matrix
     try:
@@ -86,6 +87,9 @@ for hyp in hyps:
     narps_visualisation.plot_brains(MA_outputs, hyp, MA_estimators_names, results_dir, masker)
     print("Building figure 3...")
     narps_visualisation.plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker)
+    print("Building figure similarities/contrasts...")
+    similarity_mask = narps_visualisation.plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_dir, masker)
+    similarity_mask_per_hyp.append(similarity_mask)
     print('Saving weights..')
     df_weights = pandas.DataFrame(columns=MA_outputs.keys())
     K, J = resampled_maps.shape
@@ -94,10 +98,14 @@ for hyp in hyps:
             df_weights[MA_model] = MA_outputs[MA_model]['weights']
     df_weights["Mean score"] = resampled_maps.mean(axis=1)
     df_weights["Var"] = resampled_maps.std(axis=1)
-    utils.plot_weights_in_Narps(hyp, df_weights)
+    print("computing Q")
+    Q = numpy.corrcoef(resampled_maps)
+    utils.plot_weights_in_Narps(Q, hyp, df_weights)
     resampled_maps = None # empyting RAM memory
 
-
+narps_visualisation.plot_hyp_similarities(similarity_mask_per_hyp, results_dir)
+narps_visualisation.plot_expected_significant_rois(results_dir)
+""" if necessary
 # print resampled maps
 from nilearn import plotting
 import matplotlib.pyplot as plt
@@ -148,3 +156,4 @@ for hyp in hyps:
     plt.suptitle("hyp {} part {}".format(hyp, i_fig),fontsize=20)
     plt.savefig("{}/Hyp{}_resampled_maps_part_{}".format(results_dir, hyp, i_fig))
     plt.close('all')
+"""

@@ -12,6 +12,7 @@ import importlib
 importlib.reload(compute_MA_outputs) # reupdate imported codes, useful for debugging
 importlib.reload(plot_generated_data) # reupdate imported codes, useful for debugging
 importlib.reload(data_generator) # reupdate imported codes, useful for debugging
+importlib.reload(utils) # reupdate imported codes, useful for debugging
 
 results_dir = "results_in_generated_data"
 if not os.path.exists(results_dir):
@@ -38,6 +39,7 @@ def print_summary_results(MA_outputs):
         print(model, " T-map (5 first): ", MA_outputs[model]['T_map'][:5])
 
 
+Poster_results = []
 for simulation in generated_data.keys():
     contrast_estimates = generated_data[simulation]
     MA_outputs = compute_MA_outputs.get_MA_outputs(contrast_estimates)
@@ -53,10 +55,16 @@ for simulation in generated_data.keys():
             df_weights[MA_model] = MA_outputs[MA_model]['weights']
     df_weights["Mean score"] = contrast_estimates.mean(axis=1)
     df_weights["Var"] = contrast_estimates.std(axis=1)
-    utils.plot_weights(simulation, df_weights)
+    Q = numpy.corrcoef(contrast_estimates)
+    utils.plot_weights(Q, simulation, df_weights)
     ## DEBUGGING
     # print(simulation)
     # print_summary_results(MA_outputs)
     print("*** Simulation for {} is DONE".format(simulation))
     print(" "*100)
+    # for Poster
+    if simulation in ["Null", "Null correlated 80%"]:
+        Poster_results.append([MA_outputs,contrast_estimates,simulation])
+# for poster
+utils.plot_PP_Poster(Poster_results)
 

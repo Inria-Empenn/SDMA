@@ -47,23 +47,14 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 
 
 #### Weights per pipeline per MA models
-scale GLS = 7, CWS = 56
 ![image link](results_in_generated_data/weights_in_Null.png)
-scale GLS = 48, CWS = 70
 ![image link](results_in_generated_data/weights_in_Null_correlated_80%25.png)
-scale GLS = 31, CWS = 40
 ![image link](results_in_generated_data/weights_in_Null_correlated_50%25.png)
-scale GLS = 25, CWS = 33
 ![image link](results_in_generated_data/weights_in_Null_correlated_20%25.png)
-scale GLS = 48, CWS = 70
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_voxels.png)
-scale GLS = 57, CWS = 110
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_20%25.png)
-scale GLS = 0.13, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_30%25.png)
-scale GLS = 0.15, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_50%25.png)
-scale GLS = 0.20, CWS = 0.24
 ![image link](results_in_generated_data/weights_in_Non-null_heterogeneous_pipelines_(%2B3_indep).png)
 &nbsp;
 
@@ -87,13 +78,26 @@ scale GLS = 0.20, CWS = 0.24
 
 #### brain maps
 ![image link](results_in_Narps_data/thresholded_map_hyp1_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp1.png)
+![image link](results_in_Narps_data/contrast_maps_hyp1.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp2_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp2.png)
+![image link](results_in_Narps_data/contrast_maps_hyp2.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp5_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp5.png)
+![image link](results_in_Narps_data/contrast_maps_hyp5.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp6_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp6.png)
+![image link](results_in_Narps_data/contrast_maps_hyp6.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp7_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp7.png)
+![image link](results_in_Narps_data/contrast_maps_hyp7.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp8_nofdr.png)
+![image link](results_in_Narps_data/similarity_maps_hyp8.png)
+![image link](results_in_Narps_data/contrast_maps_hyp8.png)
 ![image link](results_in_Narps_data/thresholded_map_hyp9_nofdr.png)
-
+![image link](results_in_Narps_data/similarity_maps_hyp9.png)
+![image link](results_in_Narps_data/contrast_maps_hyp9.png)
 
 &nbsp;
 ---

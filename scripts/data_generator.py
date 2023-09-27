@@ -1,6 +1,6 @@
 import numpy
 
-def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrelated_result_ratio=0.3, seed=0):
+def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrelated_result_ratio=0.3, seed=1):
     numpy.random.seed(seed) # reproducibility
     # simulation 0
     sigma=1
@@ -11,7 +11,7 @@ def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrel
     # generate iid matrix of dimension K columns, J rows
     if case=="Null":
         print("Generating simulation: ", case)
-        rng = numpy.random.default_rng(seed=0)
+        rng = numpy.random.default_rng(seed=seed)
         return mu + sigma * rng.standard_normal(size=(K,J))
 
     # Simulation 1: Null data with correlation: Induce correlation Q, mean 0, variance 1

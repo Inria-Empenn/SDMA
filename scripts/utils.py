@@ -19,9 +19,9 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
      K, J = contrast_estimates.shape
      p_cum = distribution_inversed(J)
      x_lim_pplot = -numpy.log10(1/J)
-     MA_estimators = list(MA_outputs.keys())
+     MA_estimators = list(MA_outputs.keys())[1:]
 
-     f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
+     f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2.5, 3), sharey=True) 
      for col, title in enumerate(MA_estimators):
           # store required variables
           #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
@@ -80,13 +80,89 @@ def plot_PP(MA_outputs, contrast_estimates,simulation):
 
 
 
+def plot_PP_Poster(Poster_results):
+     contrast_estimates = Poster_results[0][1]
+     MA_outputs = Poster_results[0][0]
+     K, J = contrast_estimates.shape
+     p_cum = distribution_inversed(J)
+     x_lim_pplot = -numpy.log10(1/J)
+     MA_estimators = list(MA_outputs.keys())[1:]
+
+     f, axs = plt.subplots(2, len(MA_estimators), figsize=(len(MA_estimators)*2.5, 5), sharey=True,sharex=True) 
+     for row in range(2):
+          for col, title in enumerate(MA_estimators):
+               contrast_estimates = Poster_results[row][1]
+               MA_outputs = Poster_results[row][0]
+               simulation = Poster_results[row][2]
+               # store required variables
+               #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
+               T_map = MA_outputs[title]["T_map"]
+               p_values = MA_outputs[title]["p_values"]
+               ratio_significance = MA_outputs[title]["ratio_significance"]
+               verdict = MA_outputs[title]["verdict"]
+
+               # reformat p and t to sort and plot
+               df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
+               df_obs = df_obs.sort_values(by=['p_values'])
+               # explected t and p distribution
+               t_expected = scipy.stats.norm.rvs(size=J, random_state=0)
+               p_expected = 1-scipy.stats.norm.cdf(t_expected)
+               df_exp = pandas.DataFrame(data=numpy.array([p_expected, t_expected]).T, columns=["p_expected", "t_expected"])
+               df_exp = df_exp.sort_values(by=['p_expected'])
+               # Assign values back
+               p_expected = df_exp['p_expected'].values
+               t_expected = df_exp['t_expected'].values
+
+               p_obs_p_cum = minusLog10me(df_obs['p_values'].values) - minusLog10me(p_cum)
+
+               if row == 0:
+                    axs[row][col].title.set_text(title)
+               else:
+                    # make pplot
+                    axs[row][col].set_xlabel("-log10 cumulative p")
+               axs[row][col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
+               if col == 0:
+                    axs[row][col].set_ylabel("{}\n\nobs p - cum p".format(simulation))
+               else:
+                    axs[row][col].set_ylabel("")
+               axs[row][col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
+               axs[row][col].axhline(0, color='black', linewidth=0.5, linestyle='--')
+
+               ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
+               p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
+               p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
+               axs[row][col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
+               axs[row][col].set_xlim(0, x_lim_pplot)
+               axs[row][col].set_ylim(-1, 1)
+
+               color= 'green' if verdict == True else 'black'
+               axs[row][col].text(2, 0.25, 'ratio={}%'.format(ratio_significance), color=color)
+
+               if row==0:
+                    plt.tick_params(
+                        axis='x',          # changes apply to the x-axis
+                        which='both',      # both major and minor ticks are affected
+                        bottom=False)     # ticks along the bottom edge are off) 
+
+     # plt.suptitle('P-P plots')
+     plt.tight_layout()
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
+
+     plt.savefig("results_in_generated_data/pp_plot_{}_POSTER.png".format(simulation))
+     plt.close('all')
+     print("** ENDED WELL **")
+
+
+
 def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
      K, J = contrast_estimates.shape
      p_cum = distribution_inversed(J)
      x_lim_pplot = -numpy.log10(1/J)
      MA_estimators = list(MA_outputs.keys())
 
-     f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
+     f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 3), sharex=True) 
      for col, title in enumerate(MA_estimators):
           # store required variables
           #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
@@ -112,8 +188,6 @@ def plot_QQ(MA_outputs, contrast_estimates,simulation, which="p"):
      simulation = simulation.replace(' ', '_')
      plt.savefig("results_in_generated_data/qq_plot_{}.png".format(simulation))
      plt.close('all')
-
-
 
 
 
@@ -144,7 +218,7 @@ def plot_multiverse_PP(results_per_seed, J):
      generated_data_types = list(results_per_seed[0].keys())
      MA_estimators = list(results_per_seed[0][generated_data_types[0]].keys())
      for generation in generated_data_types:
-          f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 2), sharex=True) 
+          f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2, 3), sharex=True) 
           for col, title in enumerate(MA_estimators):
                for seed in results_per_seed.keys():
                     # store required variables
@@ -199,24 +273,52 @@ def plot_multiverse_PP(results_per_seed, J):
           plt.close('all')
           print("** PLOTTING multiverse in {} ENDED WELL **".format(generation))
 
-def plot_weights(simulation, weights):
-     print("Plotting weights for each MA model and pipeline")
-     plt.close('all')
-     f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 5), gridspec_kw={'wspace': 0})
-     plt.suptitle(simulation)
-     for i, (s, a) in enumerate(zip(weights.columns, axs)):
-          if i<weights.columns.size-3:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
-          elif i<weights.columns.size-2:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})    
-          elif i<weights.columns.size-1:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='coolwarm', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
-          else:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
-          if i>0:
-               a.yaxis.set_ticks([])
-          a.tick_params(axis='x', rotation=30)
+# def plot_weights(simulation, weights):
+#      print("Plotting weights for each MA model and pipeline")
+#      plt.close('all')
+#      f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 5), gridspec_kw={'wspace': 0})
+#      plt.suptitle(simulation)
+#      for i, (s, a) in enumerate(zip(weights.columns, axs)):
+#           if i<weights.columns.size-3:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
+#           elif i<weights.columns.size-2:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})    
+#           elif i<weights.columns.size-1:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='coolwarm', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+#           else:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+#           if i>0:
+#                a.yaxis.set_ticks([])
+#           a.tick_params(axis='x', rotation=30)
      
+#      plt.tight_layout()
+#      if "\n" in simulation:
+#           simulation = simulation.replace('\n', '')
+#      simulation = simulation.replace(' ', '_')
+#      plt.savefig("results_in_generated_data/weights_in_{}.png".format(simulation))
+#      plt.close('all')
+#      print("Done plotting")
+
+def plot_weights(Q, simulation, weights):
+     print("Plotting weights for each pipeline")
+     data = weights[weights.columns[[5, -2, -1]]]
+     plt.close('all')
+     f = plt.figure(figsize=(10, 5)) #, gridspec_kw={'wspace': 0})
+     plt.suptitle(simulation)
+     ax1 = plt.subplot2grid((1,6), (0,0))
+     seaborn.heatmap(numpy.array([data['GLS \nSDMA Stouffer'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['GLS \nSDMA Stouffer'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
+     ax1.tick_params(axis='x', rotation=30)
+     ax1.set_title('Weights')
+     ax2 = plt.subplot2grid((1,6), (0,1))
+     seaborn.heatmap(numpy.array([data['Mean score'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['Voxels Mean'], fmt='.1f', ax=ax2, cbar=True, cbar_kws={'shrink': 0.25})
+     ax2.tick_params(axis='x', rotation=30)
+     ax3 = plt.subplot2grid((1,6), (0,2))
+     seaborn.heatmap(numpy.array([data['Var'].values]).T, center=0, yticklabels=data.index, cmap='Reds', square=True, xticklabels=['Voxels Variance'], fmt='.1f', ax=ax3, cbar=True, cbar_kws={'shrink': 0.25})
+     ax3.tick_params(axis='x', rotation=30)
+     ax4 = plt.subplot2grid((1,6), (0,3), colspan=3)
+     seaborn.heatmap(Q, center=0, cmap='coolwarm', square=True, fmt='.1f', ax=ax4, cbar=True, cbar_kws={'shrink': 0.25})
+     ax4.tick_params(axis='x', rotation=90)
+     ax4.set_title('Correlation matrix',y=-0.08,pad=-14)
      plt.tight_layout()
      if "\n" in simulation:
           simulation = simulation.replace('\n', '')
@@ -225,26 +327,54 @@ def plot_weights(simulation, weights):
      plt.close('all')
      print("Done plotting")
 
-def plot_weights_in_Narps(hyp, weights):
-     print("Plotting weights for each MA model and pipeline")
-     plt.close('all')
-     f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 15), gridspec_kw={'wspace': 0})
-     plt.suptitle("Weights for hypothesis ".format(hyp))
-     for i, (s, a) in enumerate(zip(weights.columns, axs)):
-          if i<weights.columns.size-3:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
-          elif i<weights.columns.size-2:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})    
-          elif i<weights.columns.size-1:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='coolwarm', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
-          else:
-               seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
-          if i>0:
-               a.yaxis.set_ticks([])
-          a.tick_params(axis='x', rotation=30)
+
+# def plot_weights_in_Narps(hyp, weights):
+#      print("Plotting weights for each MA model and pipeline")
+#      plt.close('all')
+#      f, axs = plt.subplots(1, weights.columns.size, figsize=(weights.columns.size, 15), gridspec_kw={'wspace': 0})
+#      plt.suptitle("Weights for hypothesis ".format(hyp))
+#      for i, (s, a) in enumerate(zip(weights.columns, axs)):
+#           if i<weights.columns.size-3:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=False)
+#           elif i<weights.columns.size-2:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, vmin=0, vmax=1, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})    
+#           elif i<weights.columns.size-1:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='coolwarm', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+#           else:
+#                seaborn.heatmap(numpy.array([weights[s].values]).T, center=0, yticklabels=weights.index, cmap='Reds', square=True, xticklabels=[s], fmt='.1f', ax=a, cbar=True, cbar_kws={'shrink': 0.25})
+#           if i>0:
+#                a.yaxis.set_ticks([])
+#           a.tick_params(axis='x', rotation=30)
      
+#      plt.tight_layout()
+#      plt.savefig("results_in_Narps_data/weights_in_hyp_{}.png".format(hyp))
+#      plt.close('all')
+#      print("Done plotting")
+
+def plot_weights_in_Narps(Q, hyp, weights):
+     print("Plotting weights for each MA model and pipeline")
+     data = weights[weights.columns[[5, -2, -1]]]
+     plt.close('all')
+     size_y_tot = 16
+     f = plt.figure(figsize=(size_y_tot+5, 15))
+     plt.suptitle("Weights for hypothesis ".format(hyp))
+     ax1 = plt.subplot2grid((1,size_y_tot), (0,0))
+     seaborn.heatmap(numpy.array([data['GLS \nSDMA Stouffer'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['GLS \nSDMA Stouffer'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
+     ax1.tick_params(axis='x', rotation=30)
+     ax1.set_title('Weights')
+     ax2 = plt.subplot2grid((1,size_y_tot), (0,1))
+     seaborn.heatmap(numpy.array([data['Mean score'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['Voxels Mean'], fmt='.1f', ax=ax2, cbar=True, cbar_kws={'shrink': 0.25})
+     ax2.tick_params(axis='x', rotation=30)
+     ax3 = plt.subplot2grid((1,size_y_tot), (0,2))
+     seaborn.heatmap(numpy.array([data['Var'].values]).T, center=0, yticklabels=data.index, cmap='Reds', square=True, xticklabels=['Voxels Variance'], fmt='.1f', ax=ax3, cbar=True, cbar_kws={'shrink': 0.25})
+     ax3.tick_params(axis='x', rotation=30)
+     ax4 = plt.subplot2grid((1,size_y_tot), (0,3), colspan=size_y_tot-3)
+     seaborn.heatmap(Q, center=0, cmap='coolwarm', square=True, fmt='.1f', ax=ax4, cbar=True, cbar_kws={'shrink': 0.25})
+     ax4.tick_params(axis='x', rotation=90)
+     ax4.set_title('Correlation matrix')
      plt.tight_layout()
      plt.savefig("results_in_Narps_data/weights_in_hyp_{}.png".format(hyp))
      plt.close('all')
      print("Done plotting")
+
 
