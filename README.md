@@ -77,25 +77,46 @@ git clone https://github.com/JLefortBesnard/SDMA.git
 &nbsp;
 
 #### brain maps
+expected results: Positive effect in ventromedial PFC hyp 1, 2, and negative for 5, 6 
+![image link](results_in_Narps_data/VMPFC_AALmask.png)
+expected results: Positive effect in ventral striatum for hyp 3, 4 (same maps as 1, 2) 
+![image link](results_in_Narps_data/VentralStriatum_AALmask.png)
+expected results: Positive effect in amygdala hyp 7, 8, 9
+![image link](results_in_Narps_data/Amygdala_AALmask.png)
+
+
 ![image link](results_in_Narps_data/thresholded_map_hyp1_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp1.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp1.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp2_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp2.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp2.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp5_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp5.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp5.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp6_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp6.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp6.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp7_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp7.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp7.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp8_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp8.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp8.png)
+
 ![image link](results_in_Narps_data/thresholded_map_hyp9_nofdr.png)
+Similarities and contrast among SDMA models
 ![image link](results_in_Narps_data/similarity_maps_hyp9.png)
 ![image link](results_in_Narps_data/contrast_maps_hyp9.png)
 

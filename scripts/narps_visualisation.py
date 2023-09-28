@@ -195,9 +195,32 @@ def plot_hyp_similarities(similarity_mask_per_hyp, results_dir):
 
 
 # from nilearn.datasets import load_mni152_brain_mask
-# from nilearn.datasets import fetch_atlas_aal
-# from nilearn import masking
-# from nilearn import image
+# from nilearn.datasets import fetch_atlas_harvard_oxford
+# import nilearn.plotting as plotting
+# import numpy as np
+# from nibabel import Nifti1Image
+
+# atlas = fetch_atlas_harvard_oxford('sub-maxprob-thr0-1mm')
+# # Define the index of the precentral gyrus in the atlas (in this case, index 3)
+# roi_indexes = [5, 6, 16, 17] # striatum
+# roi_indexes = [10, 20] # amygdale
+
+# # Create a binary mask for the precentral gyrus
+# roi_mask = np.zeros_like(atlas.maps.get_fdata())
+# for roi_i in roi_indexes:
+#     roi_mask[atlas.maps.get_fdata() == roi_i] = 1
+# # Create a new Nifti image from the mask
+# roi_nifti = Nifti1Image(roi_mask, affine=atlas.maps.affine)
+# # Plot the roi using Nilearn
+# plotting.plot_stat_map(roi_nifti, title="Amygdala", annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Blues')
+# # plotting.plot_roi(roi_nifti, title=atlas.labels[roi_index], display_mode='ortho', cut_coords=(40, -20, 50))
+# # Show the plot
+# # plt.savefig('results_in_Narps_data/VMPFC_mask.png')
+# plt.show()
+# plt.close('all')
+
+
+
 
 # atlas_aal = fetch_atlas_aal()
 # hyp789 = [
@@ -205,27 +228,17 @@ def plot_hyp_similarities(similarity_mask_per_hyp, results_dir):
 #     'Amygdala_L'
 # ]
 # hyp1256= [
-#     'Precentral_L',
-#     'Precentral_R',
-#     'Frontal_Sup_L',
-#     'Frontal_Sup_R',
 #     'Frontal_Sup_Orb_L',
 #     'Frontal_Sup_Orb_R',
-#     'Frontal_Mid_L',
-#     'Frontal_Mid_R',
 #     'Frontal_Mid_Orb_L',
 #     'Frontal_Mid_Orb_R',
-#     'Frontal_Inf_Oper_L',
-#     'Frontal_Inf_Oper_R',
-#     'Frontal_Inf_Tri_L',
-#     'Frontal_Inf_Tri_R',
 #     'Frontal_Inf_Orb_L',
 #     'Frontal_Inf_Orb_R',
-#     'Precentral_L',
-#      'Frontal_Sup_Medial_L',
-#     'Frontal_Sup_Medial_R',
 #     'Frontal_Med_Orb_L',
 #     'Frontal_Med_Orb_R',
+#     'Olfactory_L',
+#     'Olfactory_R',
+
 # ]
 # hyp34= [
 #     'Caudate_L',
@@ -253,11 +266,10 @@ def plot_hyp_similarities(similarity_mask_per_hyp, results_dir):
 #     ROI_img = image.new_img_like(atlas_aal_nii, fake_ROI)
 #     # Visualize the resulting image
 #     plotting.plot_stat_map(ROI_img, title="{}".format(ROI_name), annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Blues')
-#     plotting.plot_roi(ROI_img, title="{} regions of AAL atlas".format(ROI_name))
-#     # plt.savefig('{}/{}_mask.png'.format(results_dir, ROI_name), dpi=300)
-#     # plt.close('all')
+#     plt.savefig('{}/{}_AALmask.png'.format(results_dir, ROI_name), dpi=300)
+#     plt.close('all')
 #     plt.show()
 # results_dir = "results_in_Narps_data"
-# compute_save_display_mask('Ventral Striatum', indices_hyp789, results_dir)
+# compute_save_display_mask('Amygdala', indices_hyp789, results_dir)
 # compute_save_display_mask('VMPFC', indices_hyp1256, results_dir)
-# compute_save_display_mask('Amygdala', indices_hyp34, results_dir)
+# compute_save_display_mask('Ventral Striatum', indices_hyp34, results_dir)
