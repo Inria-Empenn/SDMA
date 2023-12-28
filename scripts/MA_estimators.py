@@ -15,7 +15,7 @@ importlib.reload(utils) # reupdate imported codes, useful for debugging
 ##### Conventional fixed effects MA models #####
 #########
 
-def average(contrast_estimates):
+def Average(contrast_estimates):
     K = contrast_estimates.shape[0]
     intuitive_solution = numpy.sum(contrast_estimates, 0)/K
     T_map = intuitive_solution.reshape(-1)
@@ -42,7 +42,7 @@ def Stouffer(contrast_estimates):
 ##### SDMA fixed effects MA models #####
 #########
 
-def dependence_corrected_Stouffer(contrast_estimates):
+def SDMA_Stouffer(contrast_estimates):
     K = contrast_estimates.shape[0]
     ones = numpy.ones((K, 1))
     # Q1 = numpy.cov(contrast_estimates)
@@ -57,26 +57,23 @@ def dependence_corrected_Stouffer(contrast_estimates):
     weights = numpy.zeros(K)
     return T_map, p_values, weights
 
-def GLS_Stouffer(contrast_estimates):
-    K = contrast_estimates.shape[0]
-    Q0 = numpy.corrcoef(contrast_estimates)
-    Q = Q0.copy()
-    top = numpy.ones(K).dot(numpy.linalg.inv(Q)).dot(contrast_estimates)
-    down = numpy.ones(K).dot(numpy.linalg.inv(Q)).dot(numpy.ones(K))
-    T_map = top/numpy.sqrt(down)
+def Consensus_Average(contrast_estimates):
+    K = contrast_estimates.shape[0] # shape contrast_estimates = K*J
+    # compute a standardized map Z∗ for mean pipeline z_mean
+    scaler = StandardScaler()
+    consensus_var = numpy.var(contrast_estimates, 1).sum() / K 
+    consensus_std = numpy.sqrt(consensus_var) # SIGMA C
+    consensus_mean = numpy.mean(contrast_estimates, 1).sum() / K # MU C 
+    Z_star_consensus = (scaler.fit_transform(numpy.mean(contrast_estimates, 0).reshape(-1, 1))) * consensus_std + consensus_mean
+    T_map = Z_star_consensus.reshape(-1)
     # Assuming variance is estimated on whole image
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-
-    weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
+    weights = numpy.zeros(K)
     return T_map, p_values, weights
 
-#########
-##### SDMA consensus MA models #####
-#########
-
-def consensus_Stouffer(contrast_estimates):
+def Consensus_SDMA_Stouffer(contrast_estimates):
     K = contrast_estimates.shape[0]
     consensus_mean = numpy.mean(contrast_estimates, 1).sum() / K # scalar
     Q0 = numpy.corrcoef(contrast_estimates)
@@ -93,8 +90,7 @@ def consensus_Stouffer(contrast_estimates):
     weights = numpy.zeros(K)
     return T_map, p_values, weights
 
-
-def weighted_Stouffer(contrast_estimates):
+def Consensus_SDMA_Stouffer_with_std_inputs(contrast_estimates):
     K = contrast_estimates.shape[0]
     # variance of each pipeline is assumed to be equal but allowed to vary over space
     # compute a standardized map Z∗ k for each pipeline k
@@ -122,17 +118,29 @@ def weighted_Stouffer(contrast_estimates):
     # and assuming infinite df
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    
     weights = contrast_estimates.mean(axis=1)*-1 # higher == less weight
     return T_map, p_values, weights
 
-def consensus_GLS_Stouffer(contrast_estimates):
+def GLS_SDMA(contrast_estimates):
+    K = contrast_estimates.shape[0]
+    Q0 = numpy.corrcoef(contrast_estimates)
+    Q = Q0.copy()
+    top = numpy.ones(K).dot(numpy.linalg.inv(Q)).dot(contrast_estimates)
+    down = numpy.ones(K).dot(numpy.linalg.inv(Q)).dot(numpy.ones(K))
+    T_map = top/numpy.sqrt(down)
+    # Assuming variance is estimated on whole image
+    # and assuming infinite df
+    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = p_values.reshape(-1)
+    weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
+    return T_map, p_values, weights
+
+def Consensus_GLS_SDMA(contrast_estimates):
     # compute GLS Stouffer first
     K = contrast_estimates.shape[0]
     Q0 = numpy.corrcoef(contrast_estimates)
     Q = Q0.copy()
     GLS_Stouffer_mean = numpy.ones(K).dot(numpy.linalg.inv(Q)).dot(contrast_estimates)
-
     # then compute the consensus GLS Stouffer
     consensus_mean = numpy.mean(contrast_estimates, 1).sum() / K # scalar
     top = GLS_Stouffer_mean - consensus_mean
@@ -142,25 +150,7 @@ def consensus_GLS_Stouffer(contrast_estimates):
     # compute p-values for inference
     p_values = 1 - scipy.stats.norm.cdf(T_map)
     p_values = p_values.reshape(-1)
-    
     weights = numpy.ones(K).dot(numpy.linalg.inv(Q))
-    return T_map, p_values, weights
-
-
-def consensus_average(contrast_estimates):
-    K = contrast_estimates.shape[0] # shape contrast_estimates = K*J
-    # compute a standardized map Z∗ for mean pipeline z_mean
-    scaler = StandardScaler()
-    consensus_var = numpy.var(contrast_estimates, 1).sum() / K 
-    consensus_std = numpy.sqrt(consensus_var) # SIGMA C
-    consensus_mean = numpy.mean(contrast_estimates, 1).sum() / K # MU C 
-    Z_star_consensus = (scaler.fit_transform(numpy.mean(contrast_estimates, 0).reshape(-1, 1))) * consensus_std + consensus_mean
-    T_map = Z_star_consensus.reshape(-1)
-    # Assuming variance is estimated on whole image
-    # and assuming infinite df
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
-    p_values = p_values.reshape(-1)
-    weights = numpy.zeros(K)
     return T_map, p_values, weights
 
 if __name__ == "__main__":

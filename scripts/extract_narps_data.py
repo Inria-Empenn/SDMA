@@ -10,7 +10,7 @@ def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask)
     for path_to_sub in glob.glob(opj(data_path, "*/hypo{}_unthresh.nii.gz".format(hyp))):
         subjects_list.append(path_to_sub.split('/')[-2])
     # Resample unthreshold maps for a given hypothesis + mask
-    resampled_maps = []
+    resampled_maps = {}
     for i_sub, subject in enumerate(subjects_list):
         if i_sub%10==0:
             print('resample image ', i_sub, '/', len(subjects_list))
@@ -32,7 +32,7 @@ def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask)
         # print("Testing equality (if nothing is displayed before ***, matrices are equal)")
         # numpy.testing.assert_array_equal(resampled_map.affine, mask.affine)
         # print("***")
-        resampled_maps.append(resampled_map)
+        resampled_maps[subject] = resampled_map
         # if i_sub%20==0: # debugging every 20 maps
         #     plt.close('all')
         #     plotting.plot_stat_map(nibabel.load(unthreshold_map), cut_coords=(-21, 0, 9))
@@ -44,3 +44,4 @@ def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask)
 
 if __name__ == "__main__":
    print('This file is intented to be used as imported only')
+

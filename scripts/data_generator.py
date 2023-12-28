@@ -23,6 +23,18 @@ def generate_simulation(case="Null", K=20, J=20000, corr=0.8, mean=2, anticorrel
         offset = numpy.zeros(K) # mean 0
         return numpy.random.multivariate_normal(offset, cov_mat, size=J).T # normal thus var = 1, transposed to get shape K,J
 
+    elif case=="Null mix":
+        print("Generating simulation: ", case, ", corr=", corr)
+        nb_ind = 3
+        cov_mat = numpy.ones((K-nb_ind, K-nb_ind)) * corr
+        numpy.fill_diagonal(cov_mat, 1)
+        offset = numpy.zeros(K-nb_ind) # mean 0
+        corr_pipelines = numpy.random.multivariate_normal(offset, cov_mat, size=J).T # normal thus var = 1, transposed to get shape K,J
+        rng = numpy.random.default_rng(seed=seed)
+        ind_pipelines = mu + sigma * rng.standard_normal(size=(nb_ind,J))
+        return numpy.concatenate((corr_pipelines, ind_pipelines), axis=0)
+
+
     # Simulation 2: Non-Null data with correlation: Induce correlation Q, mean >= 1, variance 1
     elif case=="Non-null correlated":
         print("Generating simulation: ", case, ", corr=", corr)

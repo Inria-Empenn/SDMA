@@ -4,6 +4,11 @@ import numpy
 import nibabel
 from statsmodels.stats.multitest import multipletests
 from nilearn import masking
+from sklearn.linear_model import LinearRegression
+from nilearn import image
+import seaborn
+import pandas
+
 
 ### VISUALIZATION NUMBERS
 def plot_distributions(MA_outputs, hyp, MA_estimators_names, results_dir):
@@ -56,10 +61,17 @@ def plot_distributions(MA_outputs, hyp, MA_estimators_names, results_dir):
                 axs[row, col].set_ylim(0, 5000)
                 axs[row, col].text(0.10, 3000, 'ratio (fdr) ={}%'.format(ratio_significance_fdr))
 
-    plt.suptitle('Hypothesis {}'.format(hyp))
-    plt.tight_layout()
-    plt.savefig("{}/hyp{}_MA_outputs.png".format(results_dir, hyp))
-    plt.close('all')
+    if hyp == "":
+        plt.suptitle('HCP')
+        plt.tight_layout()
+        plt.savefig("{}/MA_outputs.png".format(results_dir))
+        plt.close('all')
+
+    else:
+        plt.suptitle('Hypothesis {}'.format(hyp))
+        plt.tight_layout()
+        plt.savefig("{}/hyp{}_MA_outputs.png".format(results_dir, hyp))
+        plt.close('all')
 
 
 ### VISUALIZATION BRAIN
@@ -119,6 +131,9 @@ def plot_brains(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
 
 ### VISUALIZATION BRAIN
 def plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
+    #  for OHBM figures
+    # MA_estimators_names = [MA_estimators_names[1], MA_estimators_names[2], MA_estimators_names[3],
+    #         MA_estimators_names[5], MA_estimators_names[6]]
     plt.close('all')
     f, axs = plt.subplots(len(MA_estimators_names[1:]), 1, figsize=(8, len(MA_estimators_names[1:])*8/5))
     for row, title in enumerate(MA_estimators_names[1:]):
@@ -152,9 +167,14 @@ def plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
         
         # plt.savefig("results_narpsdata/{}_hyp{}_p_sign_map.png".format(title, hyp))
         # plt.close('all')
-    plt.suptitle('Hypothesis {}'.format(hyp))
-    plt.savefig("{}/thresholded_map_hyp{}_nofdr.png".format(results_dir, hyp))
-    plt.close('all')
+    if hyp == "":
+        plt.suptitle('HCP')
+        plt.savefig("{}/thresholded_map.png".format(results_dir))
+        plt.close('all')
+    else:
+        plt.suptitle('Hypothesis {}'.format(hyp))
+        plt.savefig("{}/thresholded_map_hyp{}_nofdr.png".format(results_dir, hyp))
+        plt.close('all')
 
 
 def plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
@@ -175,13 +195,20 @@ def plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_d
     plt.close('all')
     plotting.plot_stat_map(similarities_mask, annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Greens')
     plt.suptitle("Similarities between SDMA models")
-    plt.savefig("{}/similarity_maps_hyp{}.png".format(results_dir, hyp))
+    if hyp =="":
+        plt.savefig("{}/similarity_maps.png".format(results_dir))
+    else:
+        plt.savefig("{}/similarity_maps_hyp{}.png".format(results_dir, hyp))
     plt.close('all')
     # plot contrast
     contrasts_mask = masking.intersect_masks(threshimgs, threshold=0, connected=True)
     plotting.plot_stat_map(contrasts_mask, annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Blues')
     plt.suptitle("Contrasts between SDMA models")
-    plt.savefig("{}/contrast_maps_hyp{}.png".format(results_dir, hyp))
+    if hyp =="":
+        plt.savefig("{}/contrast_maps.png".format(results_dir))
+    else:
+        plt.savefig("{}/contrast_maps_hyp{}.png".format(results_dir, hyp))
+    
     plt.close('all')
     return similarities_mask
 
@@ -193,6 +220,116 @@ def plot_hyp_similarities(similarity_mask_per_hyp, results_dir):
     plt.savefig("{}/similarity_maps_all_hyp.png".format(results_dir))
     plt.close('all')
 
+
+def compute_betas(resampled_maps):
+    print("Compute betas for a pipeline and substract the sum of betas from the pipeline voxels value")
+    residuals_maps = numpy.zeros(resampled_maps.shape) # K*J
+    coefficients = []
+    K = resampled_maps.shape[0]
+    for k in range(K):
+        print("computing pipeline ", k)
+        Y = resampled_maps[k][:]
+        resampled_maps_without_k = numpy.delete(resampled_maps, [k], axis=0)
+        X = resampled_maps_without_k[:][:]
+        reg = LinearRegression().fit(X.T, Y)
+        # save betas
+        coefficients.append(reg.coef_)
+        # remove betas from pipeline voxels value
+        residuals_maps[k][:] = resampled_maps[k][:] - numpy.sum(reg.coef_.reshape(-1, 1)*resampled_maps_without_k, axis=0)
+    return coefficients, residuals_maps
+
+
+def plot_betas(coefficients, hyp, results_dir, team_names):
+    coefficients_to_plot=[]
+    for ind, coefs in enumerate(coefficients):
+        coefs = numpy.insert(coefs, ind, 0)
+        coefficients_to_plot.append(coefs)
+    coefficients_to_plot = numpy.array(coefficients_to_plot)
+    coefficients_to_plot = pandas.DataFrame(data=coefficients_to_plot, columns=team_names, index=team_names)
+    plt.close("all")
+    f, ax = plt.subplots(figsize=(20, 20))
+    seaborn.heatmap(coefficients_to_plot, center=0, cmap="coolwarm", square=True, fmt='.1f', cbar_kws={"shrink": 0.25}, figure=f, ax=ax)
+    if hyp =="":
+        plt.suptitle("betas",fontsize=12)
+        plt.xticks(rotation=90)
+        plt.yticks(rotation=0)
+        plt.savefig("{}/betas".format(results_dir))
+    else:
+        plt.suptitle("hyp {} betas".format(hyp),fontsize=12)
+        plt.xticks(rotation=90)
+        plt.yticks(rotation=0)
+        plt.savefig("{}/Hyp{}_betas".format(results_dir, hyp))
+    plt.close("all")
+
+
+def plot_nii_maps(resampled_maps, masker, hyp, results_dir, title):
+    # 60 / 20 = 3 figures with 20 plots each 
+    nii_maps = resampled_maps.values()
+    numerical_maps = masker.fit_transform(nii_maps)
+    team_names = list(resampled_maps.keys())
+    max_range =  len(team_names)
+    v_max = 10 if title == "resampled" else 5
+    print("Max=",numerical_maps.max(), "Min=", numerical_maps.min(), "picked=", v_max)
+    for i_fig in range(3):
+        plt.close('all')
+        if i_fig == 0:
+            f, axs = plt.subplots(int(11), 2, figsize=(30, 35))
+            for pipeline_nb in range(22):
+                print("Plotting pipeline ", team_names[pipeline_nb], pipeline_nb, "/", len(nii_maps))
+                row, col = [pipeline_nb, 0] if pipeline_nb <= 10 else [pipeline_nb - 11, 1]
+                title_graph = "{}, ({}, {})".format(team_names[pipeline_nb], int(numpy.max((numerical_maps[pipeline_nb]))), int(numpy.min((numerical_maps[pipeline_nb]))))
+                plotting.plot_stat_map(image.index_img(nii_maps, pipeline_nb), cut_coords=(-21, 0, 9), vmax=v_max, cmap="coolwarm", figure=f, axes=axs[row, col], title=title_graph)
+            print('saving...')
+            plt.suptitle("hyp {} part {}, {}".format(hyp, i_fig, title),fontsize=20)
+            plt.savefig("{}/Hyp{}_{}_maps_part_{}".format(results_dir, hyp, title, i_fig))
+            plt.close('all')
+        elif i_fig == 1:
+            f, axs = plt.subplots(int(11), 2, figsize=(30, 35))
+            for pipeline_nb in range(22, 44):
+                print("Plotting pipeline ", team_names[pipeline_nb], pipeline_nb, "/", len(nii_maps))
+                row, col = [pipeline_nb-22, 0] if pipeline_nb-22 <= 10 else [pipeline_nb - 33, 1]
+                title_graph = "{}, ({}, {})".format(team_names[pipeline_nb], int(numpy.max((numerical_maps[pipeline_nb]))), int(numpy.min((numerical_maps[pipeline_nb]))))
+                plotting.plot_stat_map(image.index_img(nii_maps, pipeline_nb), cut_coords=(-21, 0, 9), vmax=v_max, cmap="coolwarm", figure=f, axes=axs[row, col], title=title_graph)
+            print('saving...')
+            plt.suptitle("hyp {} part {}, {}".format(hyp, i_fig, title),fontsize=20)
+            plt.savefig("{}/Hyp{}_{}_maps_part_{}".format(results_dir, hyp, title, i_fig))
+            plt.close('all')
+        elif i_fig == 2:
+            f, axs = plt.subplots(int(11), 2, figsize=(30, 35))
+            for pipeline_nb in range(44, max_range): # max_range = nb of pipelines
+                print("Plotting pipeline ", team_names[pipeline_nb], pipeline_nb, "/", len(nii_maps))
+                row, col = [pipeline_nb-44, 0] if pipeline_nb-44 <= 10 else [pipeline_nb - 55, 1]
+                try:
+                    title_graph = "{}, ({}, {})".format(team_names[pipeline_nb], int(numpy.max((numerical_maps[pipeline_nb]))), int(numpy.min((numerical_maps[pipeline_nb]))))
+                    plotting.plot_stat_map(image.index_img(nii_maps, pipeline_nb), cut_coords=(-21, 0, 9), vmax=v_max, cmap="coolwarm", figure=f, axes=axs[row, col], title=title_graph)
+                except:
+                    axs[row, col].set_axis_off()
+                    print("no pipeline ", pipeline_nb)
+            print('saving...')
+            plt.suptitle("hyp {} part {}, {}".format(hyp, i_fig, title),fontsize=20)
+            plt.savefig("{}/Hyp{}_{}_maps_part_{}".format(results_dir, hyp, title, i_fig))
+            plt.close('all')
+
+
+def plot_hcp_maps(resampled_maps, team_names, masker, results_dir, title):
+    # 1 fig 24 plots in total
+    numerical_maps = resampled_maps
+    nii_maps = masker.inverse_transform(resampled_maps)
+    max_range =  len(team_names)
+    v_max = 10 if title == "resampled" else 1
+    print("Max=",numerical_maps.max(), "Min=", numerical_maps.min(), "picked=", v_max)
+    plt.close('all')
+    f, axs = plt.subplots(12, 2, figsize=(30, 35))
+    for pipeline_nb in range(max_range):
+        print("Plotting pipeline ", team_names[pipeline_nb], ", => ", pipeline_nb, "/", max_range)
+        row, col = [pipeline_nb, 0] if pipeline_nb <= 11 else [pipeline_nb - 12, 1]
+        title_graph = "{}, ({}, {})".format(team_names[pipeline_nb], int(numpy.max((numerical_maps[pipeline_nb]))), int(numpy.min((numerical_maps[pipeline_nb]))))
+        plotting.plot_stat_map(image.index_img(nii_maps, pipeline_nb), cut_coords=(-21, 0, 9), vmax=v_max, cmap="coolwarm", figure=f, axes=axs[row, col], title=title_graph)
+    print('saving...')
+    plt.suptitle(title,fontsize=20)
+    plt.savefig("{}/{}_maps".format(results_dir, title))
+    plt.close('all')
+    
 
 # from nilearn.datasets import load_mni152_brain_mask
 # from nilearn.datasets import fetch_atlas_harvard_oxford

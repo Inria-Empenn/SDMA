@@ -3,11 +3,25 @@
 *.nii.gz
 *.npy
 
+# picture file
+*.png
+*.mat
+*.html
+HCP_html/
+NARPS_html/
+results_in_generated_data/
+results_in_HCP_data/
+results_in_Narps_data/
+results_in_Narps_data_negative_out/
+results_Q_assumptions/
+
 
 # debugging maps
 debugmaps/
 temp/
 admin/
+masking/
+hcp_data/
 
 
 # other uninteresting files
