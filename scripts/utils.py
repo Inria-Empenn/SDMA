@@ -13,19 +13,21 @@ import compute_MA_outputs
 
 
 
-def compute_weights(Zmaps):
-     # Box plot: p_value per team for a specific voxel
-     K = Zmaps.shape[0]
-     ones = numpy.ones((Zmaps.shape[0], 1))
-     Q = numpy.corrcoef(Zmaps)
+def compute_contributions(pipeline_z_scores, W="SDMA", std_by_Stouffer=True):
+     ones = numpy.ones((pipeline_z_scores.shape[0], 1))
+     Q = numpy.corrcoef(pipeline_z_scores)
      W_sdma = (ones.T.dot(Q).dot(ones))**(-1/2) # scalar
-     # W = numpy.sum(numpy.linalg.inv(numpy.eye(K))) # sum of 1s
-     W = 1
-     data_SDMA_Stouffer = Zmaps * W
+     if W == "SDMA":
+          contributions_SDMA_Stouffer = pipeline_z_scores * W_sdma
+     else:
+          contributions_SDMA_Stouffer = pipeline_z_scores * W # W=1
      Q_inv = numpy.linalg.inv(Q)
      W_gls= (ones.T.dot(Q_inv).dot(ones))**(-1/2) * (numpy.sum(Q_inv, axis=1)).reshape(-1, 1) # vector
-     data_GLS = Zmaps * W_gls / W_sdma
-     return data_SDMA_Stouffer, data_GLS
+     if std_by_Stouffer==True:
+          contributions_GLS = pipeline_z_scores * W_gls / W_sdma
+     else:
+          contributions_GLS = pipeline_z_scores * W_gls 
+     return contributions_SDMA_Stouffer, contributions_GLS
 
 def plot_generated_data(generated_data, results_dir):
     # #######################################
@@ -41,11 +43,13 @@ def plot_generated_data(generated_data, results_dir):
         spat_mat = numpy.corrcoef(contrast_estimates.T)
         corr_mat = numpy.corrcoef(contrast_estimates)
         seaborn.heatmap(contrast_estimates[:, :50], center=0, vmin=contrast_estimates.min(), vmax=contrast_estimates.max(), cmap='coolwarm', ax=axs[index],cbar_kws={'shrink': 0.5})
-        axs[index].title.set_text("{} data pipeline\nGenerated values (mean={}, var={})\nSpatial correlation={}\nPipelines correlation={}".format(title, mean, var, numpy.round(spat_mat.mean(), 2), numpy.round(corr_mat.mean(), 2)))
+        # axs[index].title.set_text("{} data pipeline\nGenerated values (mean={}, var={})\nSpatial correlation={}\nPipelines correlation={}".format(title, mean, var, numpy.round(spat_mat.mean(), 2), numpy.round(corr_mat.mean(), 2)))
+        axs[index].title.set_text("{} data pipeline\nCorr = {}".format(title, numpy.round(corr_mat.mean(), 2)))
+        
         axs[index].set_xlabel("J voxels", fontsize = 12)
         axs[index].set_ylabel("K pipelines", fontsize = 12)
     plt.tight_layout()
-    plt.savefig("{}/data_visualisation.png".format(results_dir))
+    plt.savefig("{}/fig1.pdf".format(results_dir))
     plt.close('all')
     print("Done plotting")
 
@@ -63,7 +67,7 @@ def plot_PP(MA_outputs, contrast_estimates,simulation, results_dir):
      K, J = contrast_estimates.shape
      p_cum = distribution_inversed(J)
      x_lim_pplot = -numpy.log10(1/J)
-     MA_estimators = list(MA_outputs.keys())[1:]
+     MA_estimators = list(MA_outputs.keys())
 
      f, axs = plt.subplots(1, len(MA_estimators), figsize=(len(MA_estimators)*2.5, 3), sharey=True) 
      for col, title in enumerate(MA_estimators):
@@ -75,6 +79,7 @@ def plot_PP(MA_outputs, contrast_estimates,simulation, results_dir):
           verdict = MA_outputs[title]["verdict"]
 
           # reformat p and t to sort and plot
+          print(title, p_values.shape, T_map.shape)
           df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
           df_obs = df_obs.sort_values(by=['p_values'])
           # explected t and p distribution
@@ -213,12 +218,13 @@ def plot_PP_OHBM_abstract(Poster_results, results_dir):
      p_cum = distribution_inversed(J)
      x_lim_pplot = -numpy.log10(1/J)
      MA_estimators = list(MA_outputs.keys())
-     # MA_estimators = list(MA_outputs.keys())[1:]
-     MA_estimators.remove("Consensus \nSDMA Stouffer \n using std inputs")
+     MA_estimators = list(MA_outputs.keys())[:]
 
      f, axs = plt.subplots(2, len(MA_estimators), figsize=(len(MA_estimators)*2.5, 5), sharey=True,sharex=True) 
      for row in range(2):
           for col, title in enumerate(MA_estimators):
+               if title == "":
+                    continue
                contrast_estimates = Poster_results[row][1]
                MA_outputs = Poster_results[row][0]
                simulation = Poster_results[row][2]
@@ -280,10 +286,92 @@ def plot_PP_OHBM_abstract(Poster_results, results_dir):
           simulation = simulation.replace('\n', '')
      simulation = simulation.replace(' ', '_')
 
-     plt.savefig("{}/pp_plot_OHBM_ABSTRACT.png".format(results_dir))
+     # plt.savefig("{}/pp_plot_OHBM_ABSTRACT.png".format(results_dir))
+     plt.savefig("{}/fig2.pdf".format(results_dir))
      plt.close('all')
      print("** ENDED WELL **")
 
+
+def plot_PP_final_figure_2(Poster_results, results_dir, corr, J, K):
+     contrast_estimates = Poster_results[0][1]
+     MA_outputs = Poster_results[0][0]
+     p_cum = distribution_inversed(J)
+     x_lim_pplot = -numpy.log10(1/J)
+     MA_estimators = list(MA_outputs.keys())
+     MA_estimators = list(MA_outputs.keys())[:]
+
+     f, axs = plt.subplots(3, len(MA_estimators), figsize=(len(MA_estimators)*2.5, 8), sharey=True,sharex=True) 
+     for row in range(3):
+          for col, title in enumerate(MA_estimators):
+               if title == "":
+                    continue
+               contrast_estimates = Poster_results[row][1]
+               MA_outputs = Poster_results[row][0]
+               simulation = Poster_results[row][2]
+               # store required variables
+               #  T_map, p_values, ratio_significance, verdict, _ = MA_outputs[title].values() # dangerous because dictionnary are not ordered
+               T_map = MA_outputs[title]["T_map"]
+               p_values = MA_outputs[title]["p_values"]
+               ratio_significance = MA_outputs[title]["ratio_significance"]
+               verdict = MA_outputs[title]["verdict"]
+
+               # reformat p and t to sort and plot
+               df_obs = pandas.DataFrame(data=numpy.array([p_values, T_map]).T, columns=["p_values", "T_values"])
+               df_obs = df_obs.sort_values(by=['p_values'])
+               # explected t and p distribution
+               t_expected = scipy.stats.norm.rvs(size=J, random_state=0)
+               p_expected = 1-scipy.stats.norm.cdf(t_expected)
+               df_exp = pandas.DataFrame(data=numpy.array([p_expected, t_expected]).T, columns=["p_expected", "t_expected"])
+               df_exp = df_exp.sort_values(by=['p_expected'])
+               # Assign values back
+               p_expected = df_exp['p_expected'].values
+               t_expected = df_exp['t_expected'].values
+
+               p_obs_p_cum = minusLog10me(df_obs['p_values'].values) - minusLog10me(p_cum)
+
+               if row == 0:
+                    axs[row][col].title.set_text(title)
+               elif row == 2:
+                    # make pplot
+                    axs[row][col].set_xlabel("-log10 cumulative p", fontsize=12)
+               axs[row][col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
+               if col == 0:
+                    axs[row][col].set_ylabel("{}\n\nobs p - expt p".format(simulation), fontsize=12)
+               else:
+                    axs[row][col].set_ylabel("")
+               axs[row][col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
+               axs[row][col].axhline(0, color='black', linewidth=0.5, linestyle='--')
+
+               ci = numpy.array([2*numpy.sqrt(p_c*(1-p_c)/J) for p_c in p_cum])
+               p_obs_p_cum_ci_above = minusLog10me(numpy.array(p_cum)+ci) - minusLog10me(p_cum)
+               p_obs_p_cum_ci_below = p_obs_p_cum_ci_above*-1
+               axs[row][col].fill_between(minusLog10me(p_cum), p_obs_p_cum_ci_below, p_obs_p_cum_ci_above, color='b', alpha=.1)
+               axs[row][col].set_xlim(0, x_lim_pplot)
+               axs[row][col].set_ylim(-1, 1)
+               color= 'green' if verdict == True else 'black'
+               if color == 'black':
+                    if ratio_significance > 5:
+                         color= 'red'
+               axs[row][col].text(1.5, -0.7, '{}%'.format(numpy.round(ratio_significance, 2)), color=color)
+
+               if row==0:
+                    plt.tick_params(
+                        axis='x',          # changes apply to the x-axis
+                        which='both',      # both major and minor ticks are affected
+                        bottom=False)     # ticks along the bottom edge are off) 
+
+     # plt.suptitle('P-P plots')
+     
+     if "\n" in simulation:
+          simulation = simulation.replace('\n', '')
+     simulation = simulation.replace(' ', '_')
+
+     # plt.savefig("{}/pp_plot_OHBM_ABSTRACT.png".format(results_dir))
+     plt.suptitle("{} voxels, {} pipelines, correlation between pipelines: {}".format(J, K, corr), fontsize=14)
+     plt.tight_layout()
+     plt.savefig("{}/fig2_J{}_K{}_Corr{}.pdf".format(results_dir,J, K, corr))
+     plt.close('all')
+     print("** ENDED WELL **")
 
 
 def plot_QQ(MA_outputs, contrast_estimates,simulation, results_dir, which="p"):
@@ -521,7 +609,7 @@ def plot_weights(matrix_KJ, weights, simulation, results_dir):
      Q_inv_organized_louvain = df_organized_louvain.values
      labels_inv_louvain_order = df_organized_louvain.columns
 
-     data = weights[["GLS SDMA", "Mean score", "Var"]]
+     data = weights[["SDMA GLS", "Mean score", "Var"]]
      plt.close('all')
 
      size_x_tot = 21
@@ -530,7 +618,7 @@ def plot_weights(matrix_KJ, weights, simulation, results_dir):
      colspan = 3  
      
      ax1 = plt.subplot2grid((1,size_x_tot), (0,0))
-     seaborn.heatmap(numpy.array([data['GLS SDMA'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['GLS SDMA'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
+     seaborn.heatmap(numpy.array([data['SDMA GLS'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['SDMA GLS'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
      ax1.tick_params(axis='x', rotation=90)
      ax1.set_title('Weights')
      
@@ -605,7 +693,7 @@ def figure_for_Narps_weights(results_dir, hyp, data, Q, name, ticks=None, labels
 
      if ticks is None:
           ax1 = plt.subplot2grid((1,size_x_tot), (0,0), colspan=2)
-          seaborn.heatmap(numpy.array([data['GLS SDMA'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['GLS SDMA'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
+          seaborn.heatmap(numpy.array([data['SDMA GLS'].values]).T, center=0, yticklabels=data.index, cmap='coolwarm', square=True, xticklabels=['SDMA GLS'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
           ax1.tick_params(axis='x', rotation=90)
           ax1.set_title('Weights')
           
@@ -622,7 +710,7 @@ def figure_for_Narps_weights(results_dir, hyp, data, Q, name, ticks=None, labels
 
      else:
           ax1 = plt.subplot2grid((1,size_x_tot), (0,0))
-          seaborn.heatmap(numpy.array([data['GLS SDMA'].values[labels_order]]).T, center=0, yticklabels=False, cmap='coolwarm', square=True, xticklabels=['GLS SDMA'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
+          seaborn.heatmap(numpy.array([data['SDMA GLS'].values[labels_order]]).T, center=0, yticklabels=False, cmap='coolwarm', square=True, xticklabels=['SDMA GLS'], fmt='.1f', ax=ax1, cbar=True, cbar_kws={'shrink': 0.25})    
           ax1.set_yticks(ticks+0.5, labels_order)
           ax1.tick_params(axis='x', rotation=90)
           ax1.set_title('Weights')
@@ -686,7 +774,7 @@ def plot_weights_Narps(results_dir, matrix_KJ, weights, hyp):
      Q_inv = pandas.DataFrame(data=Q_inv, columns=team_names, index=team_names)
      Q = pandas.DataFrame(data=Q, columns=team_names, index=team_names)
 
-     data = weights[["GLS SDMA", "Mean score", "Var"]]
+     data = weights[["SDMA GLS", "Mean score", "Var"]]
      ticks = numpy.arange(0, matrix_KJ.shape[0]) # for reordering labeling, needs to know index max
      
      figure_for_Narps_weights(results_dir, hyp, data, Q, "Q", ticks=None, labels_order=None)
@@ -698,3 +786,25 @@ def plot_weights_Narps(results_dir, matrix_KJ, weights, hyp):
 
      print("Done plotting")
 
+def paper_figure_simulations(generated_data, results_dir):
+    # #######################################
+    # print("Plotting generated data")
+    # #######################################
+    print("Plotting data")
+    plt.close('all')
+    f, axs = plt.subplots(1, len(generated_data.keys()), figsize=(len(generated_data.keys())*6, 6)) 
+    for index, title in enumerate(generated_data.keys()):
+        contrast_estimates = generated_data[title]
+        mean = numpy.round(numpy.mean(contrast_estimates), 2)
+        var = numpy.round(numpy.var(contrast_estimates), 2)
+        spat_mat = numpy.corrcoef(contrast_estimates.T)
+        corr_mat = numpy.corrcoef(contrast_estimates)
+        seaborn.heatmap(contrast_estimates[:, :50], center=0, vmin=contrast_estimates.min(), vmax=contrast_estimates.max(), cmap='coolwarm', ax=axs[index],cbar_kws={'shrink': 0.5})
+        axs[index].set_title("{} data pipeline\n Corr = {}".format(title, numpy.round(corr_mat.mean(), 2)), fontsize=18)
+        axs[index].set_xlabel("J voxels", fontsize = 18)
+        axs[index].set_ylabel("K pipelines", fontsize = 18)
+        axs[index].tick_params(axis='y', labelrotation=0)
+    plt.tight_layout()
+    plt.savefig("{}/Fig1.png".format(results_dir))
+    plt.close('all')
+    print("Done plotting")

@@ -153,7 +153,7 @@ def plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
         tdata = t_brain.get_fdata()
         threshdata = (pdata <= 0.05)*tdata #0.05 is threshold significance
         threshimg = nibabel.Nifti1Image(threshdata, affine=t_brain.affine)
-        long_title = title + ', {}%'.format(perc_sign_voxels)
+        long_title = title + ', {}%'.format(numpy.round(perc_sign_voxels, 2))
         if "\n" in long_title:
             long_title = long_title.replace('\n', '')
         # plotting.plot_stat_map(t_brain, title=long_title, colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap="coolwarm", ax=axs[row, 0])
@@ -162,7 +162,7 @@ def plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
         # plotting.plot_stat_map(p_brain, threshold=0.1, title=long_title, colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap="Reds")
         # plt.savefig("results_narpsdata/{}_hyp{}_p_map.png".format(title, hyp))
         # plt.close('all')
-        plotting.plot_stat_map(threshimg, annotate=False, threshold=0.1,vmax=8, colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Reds', axes=axs[row])
+        plotting.plot_stat_map(threshimg, annotate=False, threshold=0.1,vmax=8, colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52), display_mode='z', cmap='Reds', axes=axs[row])
         axs[row].set_title(long_title)
         
         # plt.savefig("results_narpsdata/{}_hyp{}_p_sign_map.png".format(title, hyp))
@@ -180,7 +180,7 @@ def plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
 def plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_dir, masker):
     threshimgs = []
     for row, title in enumerate(MA_estimators_names[2:]): # only SDMA
-        p_values_raw =MA_outputs[title]['p_values']
+        p_values_raw = MA_outputs[title]['p_values']
         p_values = p_values_raw.copy()
         p_values[p_values <= 0.05] = -1 # -1 to avoid including p values of value 1 as significant
         p_values[p_values != -1] = 0
@@ -191,7 +191,7 @@ def plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_d
         # # debugging
         # print(p_values.sum()/p_values.__len__()*100)
     # plot similarities
-    similarities_mask = masking.intersect_masks(threshimgs, threshold=1, connected=True)
+    similarities_mask = masking.intersect_masks(threshimgs, threshold=1, connected=False)
     plt.close('all')
     plotting.plot_stat_map(similarities_mask, annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Greens')
     plt.suptitle("Similarities between SDMA models")
@@ -201,7 +201,7 @@ def plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_d
         plt.savefig("{}/similarity_maps_hyp{}.png".format(results_dir, hyp))
     plt.close('all')
     # plot contrast
-    contrasts_mask = masking.intersect_masks(threshimgs, threshold=0, connected=True)
+    contrasts_mask = masking.intersect_masks(threshimgs, threshold=0, connected=False)
     plotting.plot_stat_map(contrasts_mask, annotate=False, vmax=1, colorbar=False, cut_coords=(-24, -10, 4, 18, 32, 52, 64), display_mode='z', cmap='Blues')
     plt.suptitle("Contrasts between SDMA models")
     if hyp =="":

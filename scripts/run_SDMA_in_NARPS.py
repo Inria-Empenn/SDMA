@@ -67,7 +67,14 @@ MA_estimators_names = ["Average",
     "GLS SDMA",
     "Consensus GLS SDMA"]
 
+MA_estimators_names = ["Stouffer",
+    "SDMA Stouffer",
+    "Consensus \nSDMA Stouffer",
+    "Consensus Average",
+    "SDMA GLS",
+    "Consensus SDMA GLS"]
 
+stop
 
 similarity_mask_per_hyp = []
 
@@ -78,14 +85,14 @@ for hyp in hyps:
         os.mkdir(os.path.join(results_dir, "hyp{}".format(hyp)))
     results_dir_hyp = os.path.join(results_dir, "hyp{}".format(hyp))
     # check if resampled_maps already exists:
-    try:
-        resampled_maps_per_team = numpy.load('{}/data/Hyp{}_resampled_maps.npy'.format(results_dir, hyp), allow_pickle=True).item() # mind result dir
-        print("resampled_maps successfully loaded")
-    except:
-        print("Data don't already exist thus starting resampling.")
-        resampled_maps_per_team = extract_narps_data.resample_NARPS_unthreshold_maps(data_path, hyp, weird_maps, participant_mask)
-        print("Saving resampled NARPS unthreshold maps...")
-        numpy.save("{}/data/Hyp{}_resampled_maps.npy".format(results_dir, hyp), resampled_maps_per_team, allow_pickle=True, fix_imports=True)
+    # try:
+    #     resampled_maps_per_team = numpy.load('{}/data/Hyp{}_resampled_maps.npy'.format(results_dir, hyp), allow_pickle=True).item() # mind result dir
+    #     print("resampled_maps successfully loaded")
+    # except:
+    #     print("Data don't already exist thus starting resampling.")
+    resampled_maps_per_team = extract_narps_data.resample_NARPS_unthreshold_maps(data_path, hyp, weird_maps, participant_mask)
+    print("Saving resampled NARPS unthreshold maps...")
+    numpy.save("{}/data/Hyp{}_resampled_maps.npy".format(results_dir, hyp), resampled_maps_per_team, allow_pickle=True, fix_imports=True)
     time.sleep(2)
     # print("plotting brains...")
     # narps_visualisation.plot_nii_maps(resampled_maps_per_team, masker, hyp, os.path.join(results_dir, "data"), "resampled")
@@ -96,22 +103,22 @@ for hyp in hyps:
     print("Z values extracted, shape=", resampled_maps.shape) # 61, 1537403 for hyp 1
 
     # compute several MA estimators for the obtained matrix
-    try:
-        MA_outputs = numpy.load('{}/data/Hyp{}_MA_estimates.npy'.format(results_dir, hyp),allow_pickle=True).item()
-        print("MA_outputs successfully loaded")
-    except:
-        print("Data don't already exist thus recomputing MA estimates.")
-        MA_outputs = compute_MA_outputs.get_MA_outputs(resampled_maps)
-        print("Saving MA estimates...")
-        numpy.save("{}/data/Hyp{}_MA_estimates".format(results_dir, hyp), MA_outputs, allow_pickle=True, fix_imports=True)
-    # print("Building figure 1... distributions")
+    # try:
+    #     MA_outputs = numpy.load('{}/data/Hyp{}_MA_estimates.npy'.format(results_dir, hyp),allow_pickle=True).item()
+    #     print("MA_outputs successfully loaded")
+    # except:
+     # print("Data don't already exist thus recomputing MA estimates.")
+    MA_outputs = compute_MA_outputs.get_MA_outputs(resampled_maps)
+    print("Saving MA estimates...")
+    numpy.save("{}/data/Hyp{}_MA_estimates".format(results_dir, hyp), MA_outputs, allow_pickle=True, fix_imports=True)
+    print("Building figure 1... distributions")
     # narps_visualisation.plot_distributions(MA_outputs, hyp, MA_estimators_names, results_dir_hyp)
-    # print("Building figure 2... MA results on brains no fdr")
-    # narps_visualisation.plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir_hyp, masker)
-    # print("Building figure 3... similarities/contrasts...")
+    print("Building figure 2... MA results on brains no fdr")
+    narps_visualisation.plot_brain_nofdr(MA_outputs, hyp, MA_estimators_names, results_dir_hyp, masker)
+    print("Building figure 3... similarities/contrasts...")
     # similarity_mask = narps_visualisation.plot_SDMA_results_divergence(MA_outputs, hyp, MA_estimators_names, results_dir_hyp, masker)
     # similarity_mask_per_hyp.append(similarity_mask)
-    # print('Saving weights..')
+    print('Saving weights..')
     # df_weights = pandas.DataFrame(columns=MA_outputs.keys(), index=team_names)
     # K, J = resampled_maps.shape
     # for row in range(K):
@@ -122,16 +129,16 @@ for hyp in hyps:
     # print("Building figure 4... weights")
     # utils.plot_weights_Narps(results_dir_hyp, resampled_maps, df_weights, hyp)
     # plot residuals
-    print("Computing residuals...")
-    coefficients, residuals_maps = narps_visualisation.compute_betas(resampled_maps)
-    print("Building figure 5... betas (for residuals)")
-    narps_visualisation.plot_betas(coefficients, hyp, results_dir_hyp, team_names)
-    print("Building figure 6... residuals")
-    residuals_maps_per_team = {}
-    for team, maps in zip(team_names, residuals_maps):
-        residuals_maps_per_team[team] = masker.inverse_transform(maps)
-    narps_visualisation.plot_nii_maps(residuals_maps_per_team, masker, hyp, results_dir_hyp, "residuals")
-    resampled_maps, coefficients, residuals_maps, residuals_nii_maps  = None, None, None, None # empyting RAM memory
+    # print("Computing residuals...")
+    # coefficients, residuals_maps = narps_visualisation.compute_betas(resampled_maps)
+    # print("Building figure 5... betas (for residuals)")
+    # narps_visualisation.plot_betas(coefficients, hyp, results_dir_hyp, team_names)
+    # print("Building figure 6... residuals")
+    # residuals_maps_per_team = {}
+    # for team, maps in zip(team_names, residuals_maps):
+    #     residuals_maps_per_team[team] = masker.inverse_transform(maps)
+    # narps_visualisation.plot_nii_maps(residuals_maps_per_team, masker, hyp, results_dir_hyp, "residuals")
+    # resampled_maps, coefficients, residuals_maps, residuals_nii_maps  = None, None, None, None # empyting RAM memory
 
 # narps_visualisation.plot_hyp_similarities(similarity_mask_per_hyp, results_dir)
 

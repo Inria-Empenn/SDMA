@@ -397,3 +397,43 @@ title_graph = "Community of Narps team"
 title_heatmap = "Heatmap (Louvain organized) based on occurence \nof belonging to the same community across each NARPS hypothesis"
 saving_name = '{}/graph_and_heatmap_all_hyp.png'.format(results_dir)
 build_both_graph_heatmap(matrix_graph, G, partition, saving_name, title_graph, title_heatmap, subjects, "All")
+
+
+
+
+
+
+##############
+# BUILD FINAL FIGURES FOR PAPER
+##############
+
+# compute frobenius score for each hypothesis
+for hyp in hyp_nums:
+    print(hyp)
+    correlation_matrices = glob.glob('{}/temp/Q_*_hyp{}.npy'.format(results_dir, hyp))
+    correlation_matrices.sort()
+    # put the participant mask at index 0 to fit louvain and sorting according
+    # to participant mask and not frontal mask (originaly at index 0)
+    new_order = [3, 1, 0, 4, 5, 6, 2]
+    correlation_matrices = [correlation_matrices[ind] for ind in new_order]
+
+    # load reference matrix (correlation matrix with participant mask) for similarity computation
+    matrix_reference_path = '{}/temp/Q_mask_90_hyp{}.npy'.format(results_dir, hyp)
+    matrix_reference = numpy.load(matrix_reference_path)
+
+
+    for ind, matrice in enumerate(correlation_matrices):
+        matrix = numpy.load(matrice)
+        if matrice.split('/')[-1] == "Q_mask_90_hyp{}.npy".format(hyp):
+            name_roi = "participant_mask"
+        else:
+            name_roi = matrice.split('/')[-1][2:-18]
+        
+        if matrice != matrix_reference_path:
+            similarity_matrix_perc_diff = ((matrix/matrix.shape[0]**2 - matrix_reference/matrix.shape[0]**2)/matrix_reference/matrix.shape[0]**2)*100
+            similarity_matrix_ratio = ((matrix - matrix_reference)/matrix_reference)*100
+            # Frobenius Norm => (Sum(abs(value)**2))**1/2
+            Fro_ratio = numpy.linalg.norm(similarity_matrix_ratio, ord='fro')
+            Fro_ratio_diff = numpy.linalg.norm(similarity_matrix_perc_diff, ord='fro')
+            
+            print("hyp {}, with atlas {}, Frobenius norm = {}%, diff = {}%".format(hyp, name_roi, Fro_ratio,Fro_ratio_diff))

@@ -24,14 +24,12 @@ def get_MA_outputs(contrast_estimates):
 		   'verdict': verdict,
 		   'weights': weights
 		} 
-	run_estimator("Average", MA_estimators.Average)
 	run_estimator("Stouffer", MA_estimators.Stouffer)
 	run_estimator("SDMA Stouffer", MA_estimators.SDMA_Stouffer)
 	run_estimator("Consensus \nSDMA Stouffer", MA_estimators.Consensus_SDMA_Stouffer)
-	run_estimator("Consensus \nSDMA Stouffer \n using std inputs", MA_estimators.Consensus_SDMA_Stouffer_with_std_inputs)
 	run_estimator("Consensus Average", MA_estimators.Consensus_Average)
-	run_estimator("GLS SDMA", MA_estimators.GLS_SDMA)
-	run_estimator("Consensus GLS SDMA", MA_estimators.Consensus_GLS_SDMA)
+	run_estimator("SDMA GLS", MA_estimators.GLS_SDMA)
+	run_estimator("Consensus SDMA GLS", MA_estimators.Consensus_GLS_SDMA)
 	
 
 	return results_simulation

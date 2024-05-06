@@ -167,16 +167,16 @@ for ind, hyp in enumerate(hyps):
     df_weights["Var"] = resampled_maps.std(axis=1)
     print("Building figure 5... weights")
     utils.plot_weights_Narps(results_dir_hyp, resampled_maps, df_weights, hyp)
-    # # plot residuals
-    # print("Computing residuals...")
-    # coefficients, residuals_maps = narps_visualisation.compute_betas(resampled_maps)
-    # print("Building figure 6... betas (for residuals)")
-    # narps_visualisation.plot_betas(coefficients, hyp, results_dir_hyp, team_names)
-    # print("Building figure 7... residuals")
-    # residuals_maps_per_team = {}
-    # for team, maps in zip(team_names, residuals_maps):
-    #     residuals_maps_per_team[team] = masker.inverse_transform(maps)
-    # narps_visualisation.plot_nii_maps(residuals_maps_per_team, masker, hyp, results_dir_hyp, "residuals")
+    # plot residuals
+    print("Computing residuals...")
+    coefficients, residuals_maps = narps_visualisation.compute_betas(resampled_maps)
+    print("Building figure 6... betas (for residuals)")
+    narps_visualisation.plot_betas(coefficients, hyp, results_dir_hyp, team_names)
+    print("Building figure 7... residuals")
+    residuals_maps_per_team = {}
+    for team, maps in zip(team_names, residuals_maps):
+        residuals_maps_per_team[team] = masker.inverse_transform(maps)
+    narps_visualisation.plot_nii_maps(residuals_maps_per_team, masker, hyp, results_dir_hyp, "residuals")
     resampled_maps, coefficients, residuals_maps, residuals_nii_maps  = None, None, None, None # empyting RAM memory
 
 narps_visualisation.plot_hyp_similarities(similarity_mask_per_hyp, results_dir)

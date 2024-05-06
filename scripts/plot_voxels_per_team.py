@@ -12,7 +12,7 @@ import os
 importlib.reload(utils)
 
 ###################################
-# extract voxel's index that is significant or not OR is significant in both in SDMA_Stouffer and GLS in frontal and occipital
+# extract voxel's index that is significant or not OR is significant in both in SDMA_Stouffer and GLS 
 ###################################
 
 outputs = {}
