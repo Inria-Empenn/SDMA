@@ -8,7 +8,8 @@ import nibabel
 ##################
 # gather NARPS team results that will be used to compute a mask
 ##################
-data_path = "data/NARPS/"
+data_path = os.path.join("Data", "NARPS")
+results_dir = os.path.join("results", "NARPS")
 subjects = []
 for path_to_sub in glob.glob("{}/*/hypo1_unthresh.nii.gz".format(data_path)):
 	subjects.append(path_to_sub.split('/')[-2])
@@ -41,4 +42,4 @@ for ind, subject in enumerate(subjects):
 		masks.append(resampled_mask)
 
 participants_mask = masking.intersect_masks(masks, threshold=0.9, connected=True)
-nibabel.save(participants_mask, "results/masking/participants_mask.nii")
+nibabel.save(participants_mask, os.path.join(results_dir, "masking", "participants_mask.nii"))

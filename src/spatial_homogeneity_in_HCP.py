@@ -251,9 +251,10 @@ full_3D = empty_3D + participants_mask.get_fdata() -  AAL_nii.get_fdata()
 remaining_voxels_fullmask = nilearn.image.new_img_like(participants_mask, full_3D)
 # get the main component of the ROI (not every single voxel)
 remaining_voxels_nii = nilearn.masking.compute_background_mask(remaining_voxels_fullmask, opening=4, connected=True)
-# remove voxels thta are in AAL as well
+# remove voxels that are in AAL as well
 voxels_already_in_AAL = remaining_voxels_nii.get_fdata() + AAL_nii.get_fdata()
 remaining_voxels_nii.get_fdata()[voxels_already_in_AAL==2] = 0
+remaining_voxels_nii = nilearn.image.new_img_like(remaining_voxels_nii, remaining_voxels_nii.get_fdata())
 nib.save(remaining_voxels_nii, os.path.join(results_dir, "masking", "WM_mask.nii"))
 WM_path = os.path.join(results_dir, "masking", "WM_mask.nii")
 # empty memory
@@ -542,10 +543,11 @@ for roi_name in list(ROI_mask_paths.keys())[:-2]:
     roi_mask = nib.load(ROI_mask_paths[roi_name])
     if roi_name == "WM":
         rebuilt_mask_GM_WM = rebuilt_mask_GM + roi_mask.get_fdata()
-        rebuilt_mask_GM_WM[rebuilt_mask_GM_WM==2] = 1 # some voxels were in two different ROIs
+        assert numpy.array_equal(numpy.unique(rebuilt_mask_GM_WM), [0, 1]), "rebuilt_mask_GM contains elements other than 0 or 1 : {}".format(numpy.unique(rebuilt_mask_GM_WM))
+
     else: 
         rebuilt_mask_GM += roi_mask.get_fdata()
-        rebuilt_mask_GM[rebuilt_mask_GM==2] = 1 # some voxels were in two different ROIs
+    assert numpy.array_equal(numpy.unique(rebuilt_mask_GM), [0, 1]), "rebuilt_mask_GM contains elements other than 0 or 1 : {}".format(numpy.unique(rebuilt_mask_GM))
 
 
 # for each ROI, compute SDMA analysis 
@@ -636,10 +638,10 @@ for SDMA_method in MA_estimators_names:
 
     max_abs_brain = numpy.abs((T_brain_GM_WM.get_fdata()*rebuilt_mask_GM_WM)).max()
 
-    scale_diff_GM = numpy.abs(diff_GM_image.get_fdata()).max()
+    scale_diff_GM = numpy.abs(diff_GM_image.get_fdata()).max() - numpy.abs(diff_GM_image.get_fdata()).max()*0.1 # 10% less than original value for visibiity
     max_diff_GM = numpy.round((diff_GM_image.get_fdata()).max(), 2)
     min_diff_GM = numpy.round((diff_GM_image.get_fdata()).min(), 2)
-    scale_diff_GM_WM = numpy.abs(diff_GM_WM_image.get_fdata()).max()
+    scale_diff_GM_WM = numpy.abs(diff_GM_WM_image.get_fdata()).max() - numpy.abs(diff_GM_WM_image.get_fdata()).max()*0.1 # 10% less than original value for visibiity
     max_diff_GM_WM = numpy.round((diff_GM_WM_image.get_fdata()).max(), 2)
     min_diff_GM_WM = numpy.round((diff_GM_WM_image.get_fdata()).min(), 2)
 
@@ -659,7 +661,7 @@ for SDMA_method in MA_estimators_names:
     nilearn.plotting.plot_stat_map(rebuilt_GM_WM, colorbar=True, axes=axs[5], cmap="coolwarm", vmax=max_abs_brain, cut_coords=cut_coords, display_mode='z')
     axs[5].set_title("Rebuild segmented analysis from GM WM",fontsize=20)
     nilearn.plotting.plot_stat_map(diff_GM_WM_image, colorbar=True, axes=axs[6], cmap="coolwarm", vmax=scale_diff_GM_WM, cut_coords=cut_coords, display_mode='z')
-    axs[6].set_title("Differences GM (max={}, min={})".format(max_diff_GM_WM, min_diff_GM_WM),fontsize=20)
+    axs[6].set_title("Differences GM WM (max={}, min={})".format(max_diff_GM_WM, min_diff_GM_WM),fontsize=20)
    
     plt.suptitle('{}'.format(SDMA_method), fontsize=25)
     plt.savefig(os.path.join(figures_dir, "spatial_homogeneity", "segmented_analysis_{}.png".format(SDMA_method)))
@@ -674,8 +676,9 @@ for SDMA_method in MA_estimators_names:
         print("Plotting {} {}".format(SDMA_method, roi_name))
         masker_roi = NiftiMasker(
                     mask_img=nib.load(ROI_mask_paths[roi_name]))
-        ROI_stats_in_ROI = masker_roi.fit_transform(outputs[roi_name][SDMA_method][1]).reshape(-1)
-        BRAIN_stats_in_ROI = masker_roi.fit_transform(outputs["Participants mask"][SDMA_method][1]).reshape(-1)
+        masker_roi.fit(resampled_maps_per_team)# fit on whole brain
+        ROI_stats_in_ROI = masker_roi.transform(outputs[roi_name][SDMA_method][1]).reshape(-1)
+        BRAIN_stats_in_ROI = masker_roi.transform(outputs["Participants mask"][SDMA_method][1]).reshape(-1)
         diff = ROI_stats_in_ROI - BRAIN_stats_in_ROI
 
         axs[i, 0].scatter(range(len(diff)), diff, color="lightblue", marker='x')

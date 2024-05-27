@@ -2,6 +2,8 @@ import os
 import glob
 from nilearn import image
 from os.path import join as opj
+import numpy
+import nibabel
 
 def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask):
     print("Extracting data from hypothesis ", hyp)
@@ -27,11 +29,7 @@ def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask)
                     unthreshold_map,
                     mask,
                     interpolation='nearest')
-        # check in narps if it was done this way !! => yes, see "suivi jeremy" doc
         assert resampled_map.get_fdata().shape == mask.get_fdata().shape
-        # print("Testing equality (if nothing is displayed before ***, matrices are equal)")
-        # numpy.testing.assert_array_equal(resampled_map.affine, mask.affine)
-        # print("***")
         resampled_maps[subject] = resampled_map
         # if i_sub%20==0: # debugging every 20 maps
         #     plt.close('all')
@@ -42,6 +40,25 @@ def resample_NARPS_unthreshold_maps(data_path, hyp, subjects_removed_list, mask)
     print("Resample DONE")
     return resampled_maps
 
-if __name__ == "__main__":
-   print('This file is intented to be used as imported only')
+
+# path to partiticipants mask
+participants_mask_path = os.path.join("results" , "NARPS", "masking", "participants_mask.nii")
+participant_mask = nibabel.load(participants_mask_path)
+
+# data_path = '/home/jlefortb/neurovault_narps_open_pipeline/orig/'
+data_path = os.path.join("data", "NARPS")
+# path to save resampled NARPS data
+output_path = os.path.join("data", "NARPS")
+
+
+#### NOT INCLUDED IN ANALYSIS 
+# "4961_K9P0" only hyp 9 is weird
+weird_maps = ["4951_X1Z4", "5680_L1A8", "5001_I07H", 
+    "4947_X19V", "4961_K9P0", "4974_1K0E", "4990_XU70",
+        "5001_I07H", "5680_L1A8"]
+
+for hyp in [1, 2, 5, 6, 7, 8, 9]:
+    resampled_maps_per_team = resample_NARPS_unthreshold_maps(data_path, hyp, weird_maps, participant_mask)
+    print("Saving resampled NARPS unthreshold maps...")
+    numpy.save(os.path.join(output_path, "Hyp{}_resampled_maps.npy".format(hyp)), resampled_maps_per_team, allow_pickle=True, fix_imports=True)
 

@@ -20,7 +20,7 @@ import seaborn
 
 
 # path to partiticipants mask
-participants_mask_path = "results/NARPS/masking/participants_mask.nii"
+participants_mask_path = os.path.join("results" , "NARPS", "masking", "participants_mask.nii")
 # path to resampled NARPS data
 data_path = os.path.join("data", "NARPS")
 # create folder to store results
