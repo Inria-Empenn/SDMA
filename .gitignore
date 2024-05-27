@@ -9,8 +9,6 @@
 # picture file
 *.png
 *.pdf
-*.mat
-*.html
 
 SDMA_following_template/
 
