@@ -8,10 +8,10 @@ import nibabel
 ##################
 # gather NARPS team results that will be used to compute a mask
 ##################
-data_path = os.path.join("Data", "NARPS")
+data_path = os.path.join("data", "NARPS")
 results_dir = os.path.join("results", "NARPS")
 subjects = []
-for path_to_sub in glob.glob("{}/*/hypo1_unthresh.nii.gz".format(data_path)):
+for path_to_sub in glob.glob(os.path.join(data_path, '*', "hypo1_unthresh.nii.gz")):
 	subjects.append(path_to_sub.split('/')[-2])
 
 # "4961_K9P0" only hyp 9 is weird
@@ -32,7 +32,7 @@ for ind, subject in enumerate(subjects):
 		print(subject, ' Maps not included')
 		continue
 
-	for unthreshold_map in glob.glob(os.path.join(data_path, '{}/hypo*_unthresh.nii.gz'.format(subject))):
+	for unthreshold_map in glob.glob(os.path.join(data_path, subject, 'hypo*_unthresh.nii.gz')):
 		# zmaps to remove from mask because weird
 		mask = masking.compute_background_mask(unthreshold_map)
 		resampled_mask = image.resample_to_img(
