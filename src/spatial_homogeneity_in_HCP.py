@@ -19,7 +19,7 @@ import seaborn
 ##################
 
 # path to partiticipants mask
-participants_mask_path = os.path.join("results", "HCP", "masking", "mask.nii.gz")
+participants_mask_path = os.path.join("results", "HCP", "masking", "participant_mask.nii.gz")
 # path to resampled HCP data
 data_path = os.path.join("data", "HCP")
 # create folder to store results
