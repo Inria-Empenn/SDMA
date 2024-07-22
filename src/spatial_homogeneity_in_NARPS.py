@@ -13,6 +13,7 @@ import compute_MA_outputs
 import nibabel as nib
 from nilearn.datasets import fetch_atlas_aal
 import seaborn
+import scipy
 
 ##################
 # Check how fair is the assumption of same Q accross the brain for all hypotheses
@@ -347,8 +348,21 @@ for hyp in [1, 2, 5, 6, 7, 8, 9]:
         ("Diff (max,min) with GM & WM", "Consensus \nSDMA Stouffer"),
         ("Diff (max,min) with GM & WM", "Consensus Average"),
         ("Diff (max,min) with GM & WM", "SDMA GLS"),
-        ("Diff (max,min) with GM & WM", "Consensus SDMA GLS")
+        ("Diff (max,min) with GM & WM", "Consensus SDMA GLS"),
+        ("DICE with GM", "SDMA Stouffer"),
+        ("DICE with GM", "Consensus \nSDMA Stouffer"),
+        ("DICE with GM", "Consensus Average"),
+        ("DICE with GM", "SDMA GLS"),
+        ("DICE with GM", "Consensus SDMA GLS"),
+        ("DICE with GM & WM", "SDMA Stouffer"),
+        ("DICE with GM & WM", "Consensus \nSDMA Stouffer"),
+        ("DICE with GM & WM", "Consensus Average"),
+        ("DICE with GM & WM", "SDMA GLS"),
+        ("DICE with GM & WM", "Consensus SDMA GLS")
         ])
+
+
+
     df = pandas.DataFrame(index=[list(ROI_mask_paths.keys())[:-2]], columns=columns)
 
     # Load NARPS 
@@ -688,6 +702,26 @@ for hyp in [1, 2, 5, 6, 7, 8, 9]:
     # empty memory
     T_brain_Frontal,T_brain_Occipital,T_brain_Parietal ,T_brain_Temporal,T_brain_Insular,T_brain_Cingulum ,T_brain_Cerebellum,T_brain_WM = None, None, None, None,None,None,None,None,
 
+
+    def calculate_DICE(t_value_roi, t_value_GM, t_value_GM_WM, roi_name, SDMA_method, df=df):
+        t_value_roi_thresholded = t_value_roi.copy()
+        t_value_GM_thresholded = t_value_GM.copy()
+        t_value_GM_WM_thresholded = t_value_GM_WM.copy()
+
+        t_value_roi_thresholded[t_value_roi_thresholded<=1.96] = 0
+        t_value_roi_thresholded[t_value_roi_thresholded>1.96] = 1
+        t_value_GM_thresholded[t_value_GM_thresholded<=1.96] = 0
+        t_value_GM_thresholded[t_value_GM_thresholded>1.96] = 1
+        t_value_GM_WM_thresholded[t_value_GM_WM_thresholded<=1.96] = 0
+        t_value_GM_WM_thresholded[t_value_GM_WM_thresholded>1.96] = 1
+        DICE_GM = 1 - scipy.spatial.distance.dice(t_value_roi_thresholded, t_value_GM_thresholded)
+        DICE_GM_WM = 1 - scipy.spatial.distance.dice(t_value_roi_thresholded, t_value_GM_WM_thresholded)
+        
+        df[("DICE with GM", "{}".format(SDMA_method))].loc[roi_name] = numpy.round(DICE_GM, 2)
+        df[("DICE with GM & WM", "{}".format(SDMA_method))].loc[roi_name] = numpy.round(DICE_GM_WM, 2)
+        print("DICE GM: ", DICE_GM)
+        print("DICE BRAIN :", DICE_GM_WM)
+        df.to_excel(os.path.join(results_dir, "spatial_homogeneity", "Frobenius_score_NARPS.xlsx"))
     
     plt.close('all')
     for SDMA_method in MA_estimators_names:
@@ -700,6 +734,10 @@ for hyp in [1, 2, 5, 6, 7, 8, 9]:
             ROI_stats_in_ROI = masker_roi.transform(outputs[roi_name][SDMA_method][1]).reshape(-1)
             BRAIN_stats_in_ROI = masker_roi.transform(outputs["Participants mask"][SDMA_method][1]).reshape(-1)
             diff = ROI_stats_in_ROI - BRAIN_stats_in_ROI
+
+            # compute DICE
+            GM_stats_in_ROI = masker_roi.transform(outputs["GM"][SDMA_method][1]).reshape(-1)
+            calculate_DICE(ROI_stats_in_ROI, GM_stats_in_ROI, BRAIN_stats_in_ROI, roi_name, SDMA_method, df=df)
 
             axs[i, 0].scatter(range(len(diff)), diff, color="lightblue", marker='x')
             if i == 8:

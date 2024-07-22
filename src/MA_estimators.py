@@ -1,7 +1,7 @@
 import numpy
 import scipy
 from sklearn.preprocessing import StandardScaler
-import importlib
+
 
 
 ####################################
@@ -111,7 +111,7 @@ def Consensus_SDMA_GLS(contrast_estimates):
     Q = Q0.copy()
     Q_inv = numpy.linalg.inv(Q)
     ones = numpy.ones((K, 1))
-    GLS_Stouffer_mean = (ones.T.dot(Q_inv).dot(contrast_estimates)) / numpy.sqrt((ones.T.dot(Q_inv).dot(ones)))
+    GLS_Stouffer_mean = (ones.T.dot(Q_inv).dot(contrast_estimates)) / (ones.T.dot(Q_inv).dot(ones))
     # then compute the consensus GLS Stouffer
     consensus_mean = numpy.mean(contrast_estimates, 1).sum() / K # scalar
     top = GLS_Stouffer_mean - consensus_mean

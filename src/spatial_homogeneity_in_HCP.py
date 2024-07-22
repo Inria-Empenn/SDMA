@@ -13,6 +13,7 @@ import compute_MA_outputs
 import nibabel as nib
 from nilearn.datasets import fetch_atlas_aal
 import seaborn
+import scipy
 
 ##################
 # Check how fair is the assumption of same Q accross the brain for all hypotheses
@@ -347,7 +348,17 @@ columns = pandas.MultiIndex.from_tuples(
     ("Diff (max,min) with GM & WM", "Consensus \nSDMA Stouffer"),
     ("Diff (max,min) with GM & WM", "Consensus Average"),
     ("Diff (max,min) with GM & WM", "SDMA GLS"),
-    ("Diff (max,min) with GM & WM", "Consensus SDMA GLS")
+    ("Diff (max,min) with GM & WM", "Consensus SDMA GLS"),
+    ("DICE with GM", "SDMA Stouffer"),
+    ("DICE with GM", "Consensus \nSDMA Stouffer"),
+    ("DICE with GM", "Consensus Average"),
+    ("DICE with GM", "SDMA GLS"),
+    ("DICE with GM", "Consensus SDMA GLS"),
+    ("DICE with GM & WM", "SDMA Stouffer"),
+    ("DICE with GM & WM", "Consensus \nSDMA Stouffer"),
+    ("DICE with GM & WM", "Consensus Average"),
+    ("DICE with GM & WM", "SDMA GLS"),
+    ("DICE with GM & WM", "Consensus SDMA GLS")
     ])
 df = pandas.DataFrame(index=[list(ROI_mask_paths.keys())[:-2]], columns=columns)
 
@@ -584,6 +595,27 @@ for roi_name in list(ROI_mask_paths.keys()):
 # ASSEMBLING SEGMENTED RESULTS INTO ONE UNIQUE MAP
 ##################################################
 
+
+def calculate_DICE(t_value_roi, t_value_GM, t_value_GM_WM, roi_name, SDMA_method, df=df):
+    t_value_roi_thresholded = t_value_roi.copy()
+    t_value_GM_thresholded = t_value_GM.copy()
+    t_value_GM_WM_thresholded = t_value_GM_WM.copy()
+
+    t_value_roi_thresholded[t_value_roi_thresholded<=1.96] = 0
+    t_value_roi_thresholded[t_value_roi_thresholded>1.96] = 1
+    t_value_GM_thresholded[t_value_GM_thresholded<=1.96] = 0
+    t_value_GM_thresholded[t_value_GM_thresholded>1.96] = 1
+    t_value_GM_WM_thresholded[t_value_GM_WM_thresholded<=1.96] = 0
+    t_value_GM_WM_thresholded[t_value_GM_WM_thresholded>1.96] = 1
+    DICE_GM = 1 - scipy.spatial.distance.dice(t_value_roi_thresholded, t_value_GM_thresholded)
+    DICE_GM_WM = 1 - scipy.spatial.distance.dice(t_value_roi_thresholded, t_value_GM_WM_thresholded)
+    
+    df[("DICE with GM", "{}".format(SDMA_method))].loc[roi_name] = numpy.round(DICE_GM, 2)
+    df[("DICE with GM & WM", "{}".format(SDMA_method))].loc[roi_name] = numpy.round(DICE_GM_WM, 2)
+    print("DICE GM: ", DICE_GM)
+    print("DICE BRAIN :", DICE_GM_WM)
+    df.to_excel(os.path.join(results_dir, "spatial_homogeneity", "Frobenius_score_HCP.xlsx"))
+
 def max_min_diff_per_roi(df, SDMA_method, image_of_differences, where):
     # saving absolute difference regionally
     # create new columns
@@ -631,6 +663,7 @@ for SDMA_method in MA_estimators_names:
     diff_GM_WM_image = nilearn.image.new_img_like(T_brain_Frontal, differences_GM_WM)
     max_min_diff_per_roi(df, SDMA_method, diff_GM_WM_image, "GM & WM")
 
+    # segmented plot
     print("Create figure")
     # plot results
     plt.close('all')
@@ -667,10 +700,7 @@ for SDMA_method in MA_estimators_names:
     plt.savefig(os.path.join(figures_dir, "spatial_homogeneity", "segmented_analysis_{}.png".format(SDMA_method)))
     plt.close('all')
 
-
-
-plt.close('all')
-for SDMA_method in MA_estimators_names:
+    # scatter plot
     f, axs = plt.subplots(9, 2, figsize=(10, 30)) 
     for i, roi_name in enumerate(list(ROI_mask_paths.keys())[:-1]):
         print("Plotting {} {}".format(SDMA_method, roi_name))
@@ -680,6 +710,10 @@ for SDMA_method in MA_estimators_names:
         ROI_stats_in_ROI = masker_roi.transform(outputs[roi_name][SDMA_method][1]).reshape(-1)
         BRAIN_stats_in_ROI = masker_roi.transform(outputs["Participants mask"][SDMA_method][1]).reshape(-1)
         diff = ROI_stats_in_ROI - BRAIN_stats_in_ROI
+
+        # compute DICE
+        GM_stats_in_ROI = masker_roi.transform(outputs["GM"][SDMA_method][1]).reshape(-1)
+        calculate_DICE(ROI_stats_in_ROI, GM_stats_in_ROI, BRAIN_stats_in_ROI, roi_name, SDMA_method, df=df)
 
         axs[i, 0].scatter(range(len(diff)), diff, color="lightblue", marker='x')
         if i == 8:
@@ -718,4 +752,20 @@ for SDMA_method in MA_estimators_names:
 
 
 
+# # to del:
+# 1, 10, 22, 23, 30, 45, 50
 
+# 7, 40, 27, 33, 39
+# df_Q_ref_organized_louvain = df_Q_ref_organized_louvain.rename(columns={i:y})
+# df_Q_ref_organized_louvain.loc[[7, 40, 27, 33, 39]]
+# df = df_Q_ref_organized_louvain.iloc[-5:]
+# df_ = pandas.concat([df, df_Q_ref_organized_louvain.loc[[7, 40, 27, 33, 39]]])
+
+
+# df_Q_ref_organized_louvain[[7, 40, 27, 33, 39]]
+# df = df_Q_ref_organized_louvain[df_Q_ref_organized_louvain.columns[:-5]]
+# df_ = df.copy()
+# df_[[7, 40, 27, 33, 39]] = df_Q_ref_organized_louvain[[7, 40, 27, 33, 39]]
+
+# seaborn.heatmap(df_, center=0, cmap='coolwarm',robust=True, square=True)
+# plt.show()
