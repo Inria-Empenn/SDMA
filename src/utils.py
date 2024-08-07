@@ -71,7 +71,8 @@ def plot_PP(Poster_results, figure_dir, corr, J, K):
                df_obs = df_obs.sort_values(by=['p_values'])
                # explected t and p distribution
                t_expected = scipy.stats.norm.rvs(size=J, random_state=0)
-               p_expected = 1-scipy.stats.norm.cdf(t_expected)
+               # p_expected = 1-scipy.stats.norm.cdf(t_expected)
+               p_expected = scipy.stats.norm.sf(t_expected)
                df_exp = pandas.DataFrame(data=numpy.array([p_expected, t_expected]).T, columns=["p_expected", "t_expected"])
                df_exp = df_exp.sort_values(by=['p_expected'])
                # Assign values back

@@ -76,5 +76,4 @@ for sim in simulations:
         title = simulation + str(sim)
         outputs.append([MA_outputs,contrast_estimates,simulation])
     print('Plotting PP for ', sim)
-    stop
     utils.plot_PP(outputs, figures_dir, correlation, J, K)
