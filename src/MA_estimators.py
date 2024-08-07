@@ -17,7 +17,8 @@ def Average(contrast_estimates):
     intuitive_solution = numpy.sum(contrast_estimates, 0)/K
     T_map = intuitive_solution.reshape(-1)
     # compute p-values for inference
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = numpy.zeros(K)
     return T_map, p_values, weights
@@ -29,7 +30,8 @@ def Stouffer(contrast_estimates):
     T_map = numpy.mean(contrast_estimates, 0)/(numpy.sqrt(1/K)) # team wise
     T_map = T_map.reshape(-1)
     # compute p-values for inference
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = numpy.zeros(K)
     return T_map, p_values, weights
@@ -47,7 +49,8 @@ def SDMA_Stouffer(contrast_estimates):
     T_map = numpy.mean(contrast_estimates, 0)/numpy.sqrt(attenuated_variance)
     T_map = T_map.reshape(-1)
     # compute p-values for inference
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = numpy.zeros(K)
     return T_map, p_values, weights
@@ -65,7 +68,8 @@ def Consensus_SDMA_Stouffer(contrast_estimates):
     T_map = T_map.reshape(-1)
     # Assuming variance is estimated on whole image
     # and assuming infinite df
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = numpy.zeros(K)
     return T_map, p_values, weights
@@ -81,7 +85,8 @@ def Consensus_Average(contrast_estimates):
     T_map = Z_star_consensus.reshape(-1)
     # Assuming variance is estimated on whole image
     # and assuming infinite df
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = numpy.zeros(K)
     return T_map, p_values, weights
@@ -98,7 +103,8 @@ def SDMA_GLS(contrast_estimates):
     T_map = T_map.reshape(-1)
     # Assuming variance is estimated on whole image
     # and assuming infinite df
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = (ones.T.dot(Q_inv).dot(ones))**(-1/2) * numpy.sum(Q_inv, axis=1) 
     return T_map, p_values, weights
@@ -119,7 +125,8 @@ def Consensus_SDMA_GLS(contrast_estimates):
     consensus_GLS_Stouffer = top/numpy.sqrt(down**-1) + consensus_mean
     T_map = consensus_GLS_Stouffer.reshape(-1)
     # compute p-values for inference
-    p_values = 1 - scipy.stats.norm.cdf(T_map)
+    # p_values = 1 - scipy.stats.norm.cdf(T_map)
+    p_values = scipy.stats.norm.sf(T_map)
     p_values = p_values.reshape(-1)
     weights = ones.T.dot(Q_inv)
     return T_map, p_values, weights

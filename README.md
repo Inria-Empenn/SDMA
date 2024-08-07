@@ -1,8 +1,9 @@
 
 # Statistical Inference for Same Data Meta-Analysis for Neuroimaging Multiverse Analyzes
 
-Jeremy Lefort-Besnard, Thomas E. Nichols\∗, Camille Maumet∗
-∗These authors contributed equally to this work
+Jeremy Lefort-Besnard, Thomas E. Nichols°, Camille Maumet°
+
+°These authors contributed equally to this work
 
 ## Table of contents
    * [How to cite?](#how-to-cite)

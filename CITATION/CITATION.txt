@@ -1,0 +1,5 @@
+@article{LefortBesnard2024SDMA,
+  title={Statistical Inference for Same Data Meta-Analysis for Neuroimaging Multiverse Analyzes},
+  author={Lefort-Besnard, Jeremy and Nichols, Thomas E and Maumet, Camille},
+  year={2024}
+}
