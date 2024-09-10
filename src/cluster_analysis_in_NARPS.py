@@ -182,7 +182,7 @@ def plot_brains(clusters, clusters_name, team_names, masker, pipeline_z_scores):
 			annotate=False,  
 			colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52, 64), 
 			display_mode='z', cmap='coolwarm', axes=axs[row, 1])
-		axs[row, 1].set_title("Sum contributions " + name, size=12)
+		axs[row, 1].set_title("Contributions " + name + " subgroup", size=12)
 
 		# plot mean GLS contribution for this cluster
 		sum_contributions_GLS_this_cluster_nii = masker.inverse_transform(this_cluster_contributions_GLS.sum(axis=0))
@@ -190,7 +190,7 @@ def plot_brains(clusters, clusters_name, team_names, masker, pipeline_z_scores):
 			annotate=False,  
 			colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52, 64), 
 			display_mode='z', cmap='coolwarm', axes=axs[row, 2])
-		axs[row, 2].set_title("Sum contributions " + name, size=12)
+		axs[row, 2].set_title("Sum contributions " + name + " subgroup", size=12)
 
 		# Save each plot as unique figure to build the final manuscript figure 
 		if len(clusters_name) == 3:
@@ -292,37 +292,37 @@ def plot_brains(clusters, clusters_name, team_names, masker, pipeline_z_scores):
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[0, 0])
-		axs[0, 0].set_title("Sum contributions majority", size=12)
+		axs[0, 0].set_title("Contributions majority subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA GLS Sum contributions correlated"],
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[0, 1])
-		axs[0, 1].set_title("Sum contributions majority", size=12)
+		axs[0, 1].set_title("Contributions majority subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA Stouffer Sum contributions anti_correlated"],
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[1, 0])
-		axs[1, 0].set_title("Sum contributions opposite", size=12)
+		axs[1, 0].set_title("Contributions opposite subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA GLS Sum contributions anti_correlated"],
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[1, 1])
-		axs[1, 1].set_title("Sum contributions opposite", size=12)
+		axs[1, 1].set_title("Contributions opposite subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA Stouffer Sum contributions independant"],
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[2, 0])
-		axs[2, 0].set_title("Sum contributions unrelated", size=12)
+		axs[2, 0].set_title("Contributions unrelated subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA GLS Sum contributions independant"],
 		annotate=False,
 		colorbar=True, cut_coords=(-24, -10, 4, 18, 32, 52),
 		display_mode='z', cmap='coolwarm', axes=axs[2, 1])
-		axs[2, 1].set_title("Sum contributions unrelated", size=12)
+		axs[2, 1].set_title("Contributions unrelated subgroup", size=12)
 
 		plotting.plot_stat_map(save_for_plotting_separately["SDMA Stouffer sign p"],
 		annotate=False, vmax=8,
@@ -728,6 +728,7 @@ clusters_name = ["correlated",
 print("plotting 3 clusters")
 
 plot_brains(clusters, clusters_name, team_names, masker, pipeline_z_scores)
+stop
 plot_voxels_per_cluster(masker, pipeline_z_scores, team_names, clusters_name, clusters, eight_voxels_nicelly_defined)
 remove_anticorr_pipelines_from_data_and_clusters(1, pipeline_z_scores, team_names, masker)
 remove_anticorr_pipelines_from_data_and_clusters(2, pipeline_z_scores, team_names, masker)

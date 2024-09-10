@@ -14,6 +14,7 @@ def plot_generated_data(generated_data, results_dir, fig_name):
     # #######################################
     print("Plotting data")
     plt.close('all')
+    # f, axs = plt.subplots(1, len(generated_data.keys()), figsize=(len(generated_data.keys())*6, 6)) 
     f, axs = plt.subplots(1, len(generated_data.keys()), figsize=(len(generated_data.keys())*6, 6)) 
     for index, title in enumerate(generated_data.keys()):
         contrast_estimates = generated_data[title]
@@ -21,12 +22,19 @@ def plot_generated_data(generated_data, results_dir, fig_name):
         var = numpy.round(numpy.var(contrast_estimates), 2)
         spat_mat = numpy.corrcoef(contrast_estimates.T)
         corr_mat = numpy.corrcoef(contrast_estimates)
-        seaborn.heatmap(contrast_estimates[:, :50], center=0, vmin=contrast_estimates.min(), vmax=contrast_estimates.max(), cmap='coolwarm', ax=axs[index],cbar_kws={'shrink': 0.5})
+        seaborn.heatmap(contrast_estimates[:,:50], center=0, vmin=contrast_estimates.min(), vmax=contrast_estimates.max(), cmap='coolwarm', ax=axs[index],cbar_kws={'shrink': 0.5})
         # axs[index].title.set_text("{} data pipeline\nGenerated values (mean={}, var={})\nSpatial correlation={}\nPipelines correlation={}".format(title, mean, var, numpy.round(spat_mat.mean(), 2), numpy.round(corr_mat.mean(), 2)))
-        axs[index].title.set_text("{} data pipeline\nCorr = {}".format(title, numpy.round(corr_mat.mean(), 2)))
-        axs[index].set_xlabel("J voxels", fontsize = 18)
-        axs[index].set_ylabel("K pipelines", fontsize = 18)
-        axs[index].tick_params(axis='y', labelrotation=0)
+        # axs[index].title.set_text("{} data pipeline\nCorr = {}".format(title, numpy.round(corr_mat.mean(), 2)))
+        scenario =["Independent", "Correlated", "Mixed"]
+        axs[index].title.set_text("{} scenario\n(Corr = {})".format(scenario[index], numpy.round(corr_mat.mean(), 2)))
+        axs[index].title.set_fontsize(20)
+        axs[index].set_xlabel("J voxels", fontsize = 25)
+        axs[index].set_ylabel("K pipelines", fontsize = 25)
+        axs[index].tick_params(axis='y', labelrotation=0, labelsize=13)
+        axs[index].tick_params(axis='x', labelrotation=0, labelsize=13)
+        # Set colorbar tick label font size
+        cbar = axs[index].collections[0].colorbar
+        cbar.ax.tick_params(labelsize=13)  # Adjust labelsize here
     plt.tight_layout()
     plt.savefig(os.path.join(results_dir, "{}.pdf".format(fig_name)))
     plt.close('all')
@@ -44,6 +52,7 @@ def minusLog10me(values):
 
 
 def plot_PP(Poster_results, figure_dir, corr, J, K):
+     scenario =["Independent", "Correlated", "Mixed"]
      contrast_estimates = Poster_results[0][1]
      MA_outputs = Poster_results[0][0]
      p_cum = distribution_inversed(J)
@@ -83,12 +92,13 @@ def plot_PP(Poster_results, figure_dir, corr, J, K):
 
                if row == 0:
                     axs[row][col].title.set_text(title)
+                    axs[row][col].title.set_fontsize(15)
                elif row == 2:
                     # make pplot
-                    axs[row][col].set_xlabel("-log10 cumulative p", fontsize=12)
+                    axs[row][col].set_xlabel("-log10 cum p", fontsize=15)
                axs[row][col].plot(minusLog10me(p_cum), p_obs_p_cum, color='y')
                if col == 0:
-                    axs[row][col].set_ylabel("{}\n\nobs p - expt p".format(simulation), fontsize=12)
+                    axs[row][col].set_ylabel("{}\nscenario\n\nobs p - expt p".format(scenario[row]), fontsize=15)
                else:
                     axs[row][col].set_ylabel("")
                axs[row][col].axvline(-numpy.log10(0.05), ymin=-1, color='black', linewidth=0.5, linestyle='--')
@@ -104,7 +114,7 @@ def plot_PP(Poster_results, figure_dir, corr, J, K):
                if color == 'black':
                     if ratio_significance > 5:
                          color= 'red'
-               axs[row][col].text(1.5, -0.7, '{}%'.format(numpy.round(ratio_significance, 2)), color=color)
+               axs[row][col].text(1.5, -0.7, '{}%'.format(numpy.round(ratio_significance, 2)), color=color, fontsize=15)
 
                if row==0:
                     plt.tick_params(
@@ -119,7 +129,7 @@ def plot_PP(Poster_results, figure_dir, corr, J, K):
      simulation = simulation.replace(' ', '_')
 
      # plt.savefig("{}/pp_plot_OHBM_ABSTRACT.png".format(results_dir))
-     plt.suptitle("{} voxels, {} pipelines, correlation between pipelines: {}".format(J, K, corr), fontsize=14)
+     plt.suptitle("{} voxels, {} pipelines, correlation between pipelines: {}".format(J, K, corr), fontsize=20)
      plt.tight_layout()
      plt.savefig(os.path.join(figure_dir, "J{}_K{}_Corr{}.pdf".format(J, K, corr)))
      plt.close('all')
