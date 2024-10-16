@@ -43,7 +43,7 @@ def plot_generated_data(generated_data, results_dir, fig_name):
 def distribution_inversed(J):
     distribution_inversed = []
     for i in range(J):
-        distribution_inversed.append(i/J)
+        distribution_inversed.append(i/(J+1))
     return distribution_inversed     
 
 def minusLog10me(values):
